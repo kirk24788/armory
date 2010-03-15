@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Changes</title>
+        <author
+            email="mifr@united.domain">Mirko Friedenhagen</author>
+    </properties>
+    <body>
+        <release
+            version="2-SNAPSHOT"
+            date="__NEXT__"
+            description="">
+            <action
+                dev="mmancino"
+                type="new">QSIKA-567: Überprüfung des Alters der PortalPom Version</action>
+            <action
+                dev="mmancino"
+                type="new">Deployment des WARs über GSC</action>
+            <action
+                dev="mmancino"
+                type="new">Konfiguration über Spring</action>
+        </release>
+        <release version="1.0" date="2009-11-27" description="Initiales Release">
+            <action
+                dev="mmancino"
+                type="new">Bugzilla Checker implementiert</action>
+            <action
+                dev="mmancino"
+                type="new">Paket Checker implementiert</action>
+            <action
+                dev="mmancino"
+                type="new">SVN Checker implementiert</action>
+            <action
+                dev="mmancino"
+                type="new">Wiki Checker implementiert</action>
+            <action
+                dev="mmancino"
+                type="new">Paket-Support für Debian-Pakete</action>
+            <action
+                dev="mmancino"
+                type="new">Paket-Support für Jar's/War's</action>
+            <action
+                dev="mmancino"
+                type="new">Paket-Support für RPM's</action>
+            <action
+                dev="mmancino"
+                type="new">Paket-Support für Shell-Skripte</action>
+            <action
+                dev="mifr"
+                type="new">SVN Support</action>
+            <action
+                dev="mifr"
+                type="new">TWiki Support</action>
+            <action
+                dev="mmancino"
+                type="new">QaArtifactCheck als Web-Server</action>
+        </release>
+    </body>
+
+<!-- Vorlage
+    <release version="1.0" date="2005-YY-XX" description="optionale relese-description">
+      <action dev="rz" type="fix">Beispiel</action>
+      <action dev="KUERZEL" type="fix/update/add/remove" issue="BUGZILLA_NUMMER" due-to="MIT_CONTRIBUTION_VON_WENN_PASSEND">Ein Beispiel für weiteren Markup in der changes.xml">
+        <code>-o</code>command line option
+      </action>
+    </release>
+-->
+</document>
