@@ -36,20 +36,33 @@ public class ItemInfo extends XmlDataWrapper {
     public final int bonusArcaneResist;
     public final int bonusFireResist;
     public final int bonusNatureResist;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonus;
-    public final int bonusSpellPower;
+    public final int bonusFrostResist;
+    public final int bonusShadowResist;
+    public final int bonusDefenseSkillRating;
+    public final int bonusExpertise;
+    public final int bonusBlock;
+    public final int bonusBlockValue;
+    public final int bonusDodge;
+    public final int bonusParry;
+    public final int bonusResilience;
+    public final int bonusArmorPen;
+    public final int bonusAttackPower;
     public final int bonusCritRating;
+    public final int bonusRangedCrit;
+    public final int bonusToHit;
+    public final int bonusRangedToHit;
     public final int bonusHasteRating;
+    public final int bonusDamageUndead;
+    public final int bonusArcaneDamage;
+    public final int bonusFireDamage;
+    public final int bonusFrostDamage;
+    public final int bonusHolyDamage;
+    public final int bonusNatureDamage;
+    public final int bonusShadowDamage;
+    public final int bonusSpellPenetration;
+    public final int bonusSpellPower;
+    public final int bonusHealthRegen;
+    public final int bonusManaRegen;
 
     public ItemInfo(int itemId) throws ArmoryConnectionException {
         super(parseArmory(itemId));
@@ -57,13 +70,37 @@ public class ItemInfo extends XmlDataWrapper {
         this.overallQualityId = getAttribute("overallQualityId");
         this.bonding = getAttribute("bonding");
         this.classId = getAttribute("classId");
-        this.bonusStamina = getAttribute("bonusStamina");
-        this.bonusIntellect = getAttribute("bonusIntellect");
+
         this.armor = getAttribute("armor");
         this.requiredLevel = getAttribute("requiredLevel");
         this.itemLevel = getAttribute("itemLevel");
-        this.bonusSpellPower = getAttribute("bonusSpellPower");
+
+        this.bonusStrength = getAttribute("bonusStrength");
+        this.bonusAgility = getAttribute("bonusAgility");
+        this.bonusStamina = getAttribute("bonusStamina");
+        this.bonusIntellect = getAttribute("bonusIntellect");
+        this.bonusSpirit = getAttribute("bonusSpirit");
+        this.bonusFireResist = getAttribute("arcaneResist");
+        this.bonus = getAttribute("fireResist");
+        this.bonus = getAttribute("natureResist");
+        this.bonus = getAttribute("frostResist");
+        this.bonus = getAttribute("shadowResist");
+        this.bonusDefenseSkillRating = getAttribute("bonusDefenseSkillRating");
+        this.bonus = getAttribute("bonusExpertiseRating");
+        this.bonus = getAttribute("bonusBlockRating");
+        this.bonus = getAttribute("bonusBlockValue");
+        this.bonus = getAttribute("bonusDodgeRating");
+        this.bonus = getAttribute("bonusParryRating");
+        this.bonus = getAttribute("bonusResilienceRating");
+        this.bonus = getAttribute("bonusArmorPenetration");
+        this.bonus = getAttribute("bonusAttackPower");
         this.bonusCritRating = getAttribute("bonusCritRating");
+        this.bonus = getAttribute("");
+        this.bonus = getAttribute("");
+        this.bonus = getAttribute("");
+        this.bonus = getAttribute("");
+        this.bonus = getAttribute("");
+        this.bonusSpellPower = getAttribute("bonusSpellPower");
         this.bonusHasteRating = getAttribute("bonusHasteRating");
     }
 
