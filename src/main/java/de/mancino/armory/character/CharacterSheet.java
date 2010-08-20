@@ -5,11 +5,11 @@
  *
  * $Id$
  */
-package de.mancino.data;
+package de.mancino.armory.character;
 
-import org.w3c.dom.Document;
 
-import de.mancino.exceptions.ArmoryConnectionException;
+import org.jdom.Document;
+
 import de.mancino.utils.XmlDataWrapper;
 
 public class CharacterSheet extends XmlDataWrapper {
@@ -48,10 +48,6 @@ public class CharacterSheet extends XmlDataWrapper {
 
     public final int titleId;
 
-
-    public CharacterSheet(final String charName, final String realmName) throws ArmoryConnectionException {
-        this(executeXmlQuery("character-sheet.xml?r=" + realmName + "&n=" + charName + "&rhtml=n"));
-    }
 
     public CharacterSheet(final Document xmlCharacterSheet) {
         super(xmlCharacterSheet);

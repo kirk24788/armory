@@ -7,60 +7,61 @@
  */
 package de.mancino.utils;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
-import de.mancino.exceptions.ArmoryConnectionException;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.xpath.XPath;
+
 
 public class XmlDataWrapper {
+    /**
+     * Logger instance of this class.
+     */
+    private static final Log LOG = LogFactory.getLog(XmlDataWrapper.class);
 
     private final Document xmlData;
 
-    public XmlDataWrapper(Document xmlData) {
+    public XmlDataWrapper(final Document xmlData) {
         this.xmlData = xmlData;
-    }
 
-    protected static Document executeXmlQuery(final String armoryUrl) throws ArmoryConnectionException {
-        final GetMethod armoryRequest = new GetMethod("http://eu.wowarmory.com/" + armoryUrl);
-        final HttpClient httpClient = new HttpClient();
-        try {
-            httpClient.executeMethod(armoryRequest);
-            return DocumentBuilderFactory.newInstance().newDocumentBuilder()
-                .parse(armoryRequest.getResponseBodyAsStream());
-        } catch (Exception e) {
-            throw new ArmoryConnectionException(e);
-        } finally {
-            armoryRequest.releaseConnection();
-        }
     }
 
     protected String getTextContent(String xPath) {
         // return search(xmlCharSheet.getFirstChild(), xPath, false).getTextContent();
-        Node node = search(xmlData.getFirstChild(), xPath, true);
+        Element node = search(xPath, true);
         if (node != null) {
-            return node.getTextContent();
+            return node.getText();
         } else {
             return null;
         }
     }
 
-    private Node search(Node node, String xPath, boolean nullAllowed) {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+    protected Element search(String xPath, boolean nullAllowed) {
         try {
-            Node returnNode = (Node) xpath.evaluate(xPath, node, XPathConstants.NODE);
-            if(returnNode == null && !nullAllowed) {
+            XPath x = XPath.newInstance(xPath);
+            Element element = (Element)x.selectSingleNode(xmlData);
+
+            if(element == null && !nullAllowed) {
                 throw new RuntimeException("No Results for: " + xPath);
             }
-            return returnNode;
-        } catch (XPathExpressionException e) {
+            return element;
+        } catch (JDOMException e) {
+            throw new RuntimeException("Invalid XPath used: " + xPath, e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<Element> searchAll(final String xPath) {
+        try {
+            XPath x = XPath.newInstance(xPath);
+            return x.selectNodes(xmlData);
+        } catch (JDOMException e) {
             throw new RuntimeException("Invalid XPath used: " + xPath, e);
         }
     }

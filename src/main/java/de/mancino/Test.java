@@ -7,11 +7,18 @@
  */
 package de.mancino;
 
-import de.mancino.data.ArmoryData;
-import de.mancino.data.ItemInfo;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import de.mancino.armory.Armory;
 import de.mancino.exceptions.ArmoryConnectionException;
 
 public class Test {
+    /**
+     * Logger instance of this class.
+     */
+    private static final Log LOG = LogFactory.getLog(Test.class);
 
     /**
      * @param args
@@ -19,10 +26,20 @@ public class Test {
     public static void main(String[] args) {
         // TODO Auto-generated method stub
         try {
-            ArmoryData chev = new ArmoryData("Chevron", "Forscherliga");
-            System.err.println(chev.characterInfo.fullCharName);
-            ItemInfo itm = new ItemInfo(50983);
-            System.err.println(itm.armor);
+            final String passwd = new String(Base64.decodeBase64("bmtnc2VxcGd5N2E="));
+            Armory armory = new Armory("mario@mancino-net.de", passwd);
+            //CharacterSheet chev = new CharacterSheet("Chevron", "Forscherliga");
+            //LOG.debug(chev.fullCharName);
+            //ItemInfo itm = new ItemInfo(50983);
+            //System.err.println(itm.armor);
+            //new AuctionSearch("");
+            /*
+            AuctionSearch as = armory.searchAuction("Adder's Tongue", Quality.POOR);
+            for(AuctionItem ai : as.auctionItems) {
+                LOG.info(ai.name + ": " + ai.currentBid + "/" + ai.buyoutPrice + "/" + ai.minimumNextBid);
+            }
+            */
+            armory.searchItem(1234);
         } catch (ArmoryConnectionException e) {
             e.printStackTrace();
         }

@@ -10,7 +10,13 @@ package de.mancino.exceptions;
 public class ArmoryConnectionException extends Exception {
 
     public ArmoryConnectionException(Exception e) {
-        // TODO Auto-generated constructor stub
+        super(e);
+    }
+    public ArmoryConnectionException(String msg, Exception e) {
+        super(msg, e);
+    }
+    public ArmoryConnectionException(String msg) {
+        super(msg);
     }
 
 }

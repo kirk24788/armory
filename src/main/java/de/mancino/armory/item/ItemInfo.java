@@ -5,14 +5,10 @@
  *
  * $Id$
  */
-package de.mancino.data;
+package de.mancino.armory.item;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
-import org.w3c.dom.Document;
+import org.jdom.Document;
 
 import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.utils.XmlDataWrapper;
@@ -65,9 +61,9 @@ public class ItemInfo extends XmlDataWrapper {
     public final int bonusHealthRegen;
     public final int bonusManaRegen;*/
 
-    public ItemInfo(int itemId) throws ArmoryConnectionException {
-        super(parseArmory(itemId));
-        this.itemId = itemId;
+    public ItemInfo(Document document) throws ArmoryConnectionException {
+        super(document);
+        this.itemId = -1;
         this.overallQualityId = getAttribute("overallQualityId");
         this.bonding = getAttribute("bonding");
         this.classId = getAttribute("classId");
@@ -107,20 +103,6 @@ public class ItemInfo extends XmlDataWrapper {
         this.bonusHasteRating = getAttribute("bonusHasteRating");*/
     }
 
-    private static Document parseArmory(int itemId) throws ArmoryConnectionException {
-        try {
-            HttpClient httpClient = new HttpClient();
-            GetMethod armoryRequest = new GetMethod("http://eu.wowarmory.com/item-tooltip.xml?i="
-                    + itemId + "&rhtml=n");
-
-            httpClient.executeMethod(armoryRequest);
-            return DocumentBuilderFactory.newInstance().newDocumentBuilder()
-            .parse(armoryRequest.getResponseBodyAsStream());
-        } catch (Exception e) {
-            throw new ArmoryConnectionException(e);
-        }
-    }
-
 
     private int getAttribute(String attribName) {
         final String value = getTextContent("//itemTooltips/itemTooltip/" + attribName);
@@ -129,12 +111,5 @@ public class ItemInfo extends XmlDataWrapper {
         } else {
             return Integer.parseInt(value);
         }
-
-    }
-
-
-
-    private String getCharacterAttribute(String attribName) {
-        return getTextContent("//characterInfo/character/@" + attribName);
     }
 }
