@@ -46,7 +46,7 @@ public class Test {
             // weiß 35806
             // heirloom 42992
             ItemInfo ii = armory.searchItem(35806);
-            System.err.println(ii.name + " QUALITY: " + ii.overallQualityId);
+            System.err.println(ii.name + " QUALITY: " + ii.quality);
         } catch (ArmoryConnectionException e) {
             e.printStackTrace();
         }

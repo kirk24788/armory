@@ -10,6 +10,7 @@ package de.mancino.armory.auction;
 import org.jdom.Element;
 
 import de.mancino.armory.enums.Price;
+import de.mancino.armory.enums.Quality;
 
 public class AuctionItem {
     /*
@@ -38,7 +39,7 @@ public class AuctionItem {
     public final long itemLevel;
     public final String name;
     public final Price minimumNextBid;
-    public final long quality;
+    public final Quality quality;
     public final long quantity;
     public final long req;
     public final long seed;
@@ -53,7 +54,7 @@ public class AuctionItem {
         this.itemLevel = Long.parseLong(auctionData.getAttribute("ilvl").getValue());
         this.name = auctionData.getAttribute("n").getValue();
         this.minimumNextBid = new Price(auctionData.getAttribute("nbid").getValue());
-        this.quality = Long.parseLong(auctionData.getAttribute("qual").getValue());
+        this.quality = Quality.parse(Integer.parseInt(auctionData.getAttribute("qual").getValue()));
         this.quantity = Long.parseLong(auctionData.getAttribute("quan").getValue());
         this.req = Long.parseLong(auctionData.getAttribute("req").getValue());
         if(auctionData.getAttribute("seed") != null) {
