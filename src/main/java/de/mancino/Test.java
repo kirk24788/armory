@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import de.mancino.armory.Armory;
+import de.mancino.armory.item.ItemInfo;
 import de.mancino.exceptions.ArmoryConnectionException;
 
 public class Test {
@@ -39,7 +40,13 @@ public class Test {
                 LOG.info(ai.name + ": " + ai.currentBid + "/" + ai.buyoutPrice + "/" + ai.minimumNextBid);
             }
             */
-            armory.searchItem(1234);
+            // schattengram 49623
+            // epische schultern 51205
+            // blaue dingsda 44735
+            // weiß 35806
+            // heirloom 42992
+            ItemInfo ii = armory.searchItem(35806);
+            System.err.println(ii.name + " QUALITY: " + ii.overallQualityId);
         } catch (ArmoryConnectionException e) {
             e.printStackTrace();
         }

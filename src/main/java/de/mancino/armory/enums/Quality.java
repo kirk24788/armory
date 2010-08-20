@@ -8,15 +8,14 @@
 package de.mancino.armory.enums;
 
 public enum Quality {
-    ALL(0),
-    POOR(1), // Grey
-    COMMON(2), // White
-    UNCOMMON(3), // Green
-    RARE(4), // Blue
-    EPIC(5), // Purple
-    LEGENDARY(6), // Orange
-    ARTIFACT(7), // Light gold
-    HEIRLOOM(8); // Light gold
+    POOR(0), // Grey
+    COMMON(1), // White
+    UNCOMMON(2), // Green
+    RARE(3), // Blue
+    EPIC(4), // Purple
+    LEGENDARY(5), // Orange
+    ARTIFACT(6), // Light gold
+    HEIRLOOM(7); // Light gold
 
     public final int numericValue;
     Quality(final int numericValue) {
@@ -29,7 +28,6 @@ public enum Quality {
                 return possibleQuality;
             }
         }
-        // TODO: Exception?
-        return ALL;
+        throw new RuntimeException("Error parsing quality: " + quality);
     }
 }

@@ -16,6 +16,7 @@ import de.mancino.utils.XmlDataWrapper;
 public class ItemInfo extends XmlDataWrapper {
 
     public final int itemId;
+    public final String name;
     public final int overallQualityId;
     public final int bonding;
     public final int classId;
@@ -63,14 +64,15 @@ public class ItemInfo extends XmlDataWrapper {
 
     public ItemInfo(Document document) throws ArmoryConnectionException {
         super(document);
-        this.itemId = -1;
-        this.overallQualityId = getAttribute("overallQualityId");
-        this.bonding = getAttribute("bonding");
-        this.classId = getAttribute("classId");
+        this.itemId = getAttributeAsInteger("id");
+        this.name = getAttributeAsString("name");
+        this.overallQualityId = getAttributeAsInteger("overallQualityId");
+        this.bonding = getAttributeAsInteger("bonding");
+        this.classId = getAttributeAsInteger("classId");
 
-        this.armor = getAttribute("armor");
-        this.requiredLevel = getAttribute("requiredLevel");
-        this.itemLevel = getAttribute("itemLevel");
+        this.armor = getAttributeAsInteger("armor");
+        this.requiredLevel = getAttributeAsInteger("requiredLevel");
+        this.itemLevel = getAttributeAsInteger("itemLevel");
 /*
         this.bonusStrength = getAttribute("bonusStrength");
         this.bonusAgility = getAttribute("bonusAgility");
@@ -104,12 +106,16 @@ public class ItemInfo extends XmlDataWrapper {
     }
 
 
-    private int getAttribute(String attribName) {
+    private int getAttributeAsInteger(String attribName) {
         final String value = getTextContent("//itemTooltips/itemTooltip/" + attribName);
         if(StringUtils.isEmpty(value)) {
             return 0;
         } else {
             return Integer.parseInt(value);
         }
+    }
+
+    private String getAttributeAsString(String attribName) {
+        return getTextContent("//itemTooltips/itemTooltip/" + attribName);
     }
 }
