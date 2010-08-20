@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 
 import de.mancino.exceptions.ArmoryConnectionException;
+import de.mancino.utils.XmlDataWrapper;
 
 public class ItemInfo extends XmlDataWrapper {
 
@@ -26,7 +27,7 @@ public class ItemInfo extends XmlDataWrapper {
     public final int requiredLevel;
     public final int itemLevel;
 
-
+/*
 
     public final int bonusStrength;
     public final int bonusAgility;
@@ -62,7 +63,7 @@ public class ItemInfo extends XmlDataWrapper {
     public final int bonusSpellPenetration;
     public final int bonusSpellPower;
     public final int bonusHealthRegen;
-    public final int bonusManaRegen;
+    public final int bonusManaRegen;*/
 
     public ItemInfo(int itemId) throws ArmoryConnectionException {
         super(parseArmory(itemId));
@@ -74,13 +75,14 @@ public class ItemInfo extends XmlDataWrapper {
         this.armor = getAttribute("armor");
         this.requiredLevel = getAttribute("requiredLevel");
         this.itemLevel = getAttribute("itemLevel");
-
+/*
         this.bonusStrength = getAttribute("bonusStrength");
         this.bonusAgility = getAttribute("bonusAgility");
         this.bonusStamina = getAttribute("bonusStamina");
         this.bonusIntellect = getAttribute("bonusIntellect");
         this.bonusSpirit = getAttribute("bonusSpirit");
         this.bonusFireResist = getAttribute("arcaneResist");
+
         this.bonus = getAttribute("fireResist");
         this.bonus = getAttribute("natureResist");
         this.bonus = getAttribute("frostResist");
@@ -100,8 +102,9 @@ public class ItemInfo extends XmlDataWrapper {
         this.bonus = getAttribute("");
         this.bonus = getAttribute("");
         this.bonus = getAttribute("");
+
         this.bonusSpellPower = getAttribute("bonusSpellPower");
-        this.bonusHasteRating = getAttribute("bonusHasteRating");
+        this.bonusHasteRating = getAttribute("bonusHasteRating");*/
     }
 
     private static Document parseArmory(int itemId) throws ArmoryConnectionException {

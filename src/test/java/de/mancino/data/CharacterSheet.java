@@ -9,7 +9,10 @@ package de.mancino.data;
 
 import org.w3c.dom.Document;
 
-public class CharacterInfo extends XmlDataWrapper {
+import de.mancino.exceptions.ArmoryConnectionException;
+import de.mancino.utils.XmlDataWrapper;
+
+public class CharacterSheet extends XmlDataWrapper {
 
     public final String battleGroup;
 
@@ -46,8 +49,11 @@ public class CharacterInfo extends XmlDataWrapper {
     public final int titleId;
 
 
+    public CharacterSheet(final String charName, final String realmName) throws ArmoryConnectionException {
+        this(executeXmlQuery("character-sheet.xml?r=" + realmName + "&n=" + charName + "&rhtml=n"));
+    }
 
-    public CharacterInfo(Document xmlCharacterSheet) {
+    public CharacterSheet(final Document xmlCharacterSheet) {
         super(xmlCharacterSheet);
         this.battleGroup = getCharacterAttribute("battleGroup");
         this.className = getCharacterAttribute("class");

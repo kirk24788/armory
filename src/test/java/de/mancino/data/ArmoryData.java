@@ -19,11 +19,11 @@ public class ArmoryData {
 
     private final Document xmlCharacterSheet;
 
-    public final CharacterInfo characterInfo;
+    public final CharacterSheet characterInfo;
 
     public ArmoryData(String charName, String realmName) throws ArmoryConnectionException {
         xmlCharacterSheet = parseArmory(charName, realmName);
-        characterInfo = new CharacterInfo(xmlCharacterSheet);
+        characterInfo = new CharacterSheet(xmlCharacterSheet);
     }
 
     private static Document parseArmory(String charName, String realmName) throws ArmoryConnectionException {

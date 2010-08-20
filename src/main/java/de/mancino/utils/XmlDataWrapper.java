@@ -5,27 +5,46 @@
  *
  * $Id$
  */
-package de.mancino.data;
+package de.mancino.utils;
 
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import de.mancino.exceptions.ArmoryConnectionException;
+
 public class XmlDataWrapper {
 
-    private final Document xmlCharSheet;
+    private final Document xmlData;
 
-    public XmlDataWrapper(Document xmlCharSheet) {
-        this.xmlCharSheet = xmlCharSheet;
+    public XmlDataWrapper(Document xmlData) {
+        this.xmlData = xmlData;
+    }
+
+    protected static Document executeXmlQuery(final String armoryUrl) throws ArmoryConnectionException {
+        final GetMethod armoryRequest = new GetMethod("http://eu.wowarmory.com/" + armoryUrl);
+        final HttpClient httpClient = new HttpClient();
+        try {
+            httpClient.executeMethod(armoryRequest);
+            return DocumentBuilderFactory.newInstance().newDocumentBuilder()
+                .parse(armoryRequest.getResponseBodyAsStream());
+        } catch (Exception e) {
+            throw new ArmoryConnectionException(e);
+        } finally {
+            armoryRequest.releaseConnection();
+        }
     }
 
     protected String getTextContent(String xPath) {
         // return search(xmlCharSheet.getFirstChild(), xPath, false).getTextContent();
-        Node node = search(xmlCharSheet.getFirstChild(), xPath, true);
+        Node node = search(xmlData.getFirstChild(), xPath, true);
         if (node != null) {
             return node.getTextContent();
         } else {

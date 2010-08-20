@@ -22,7 +22,7 @@ public class Test {
             ArmoryData chev = new ArmoryData("Chevron", "Forscherliga");
             System.err.println(chev.characterInfo.fullCharName);
             ItemInfo itm = new ItemInfo(50983);
-            System.err.println(itm.bonusSpellPower);
+            System.err.println(itm.armor);
         } catch (ArmoryConnectionException e) {
             e.printStackTrace();
         }
