@@ -34,7 +34,9 @@ import org.jdom.output.XMLOutputter;
 import de.mancino.armory.auction.AuctionSearch;
 import de.mancino.armory.character.CharacterSheet;
 import de.mancino.armory.enums.Quality;
+import de.mancino.armory.item.Item;
 import de.mancino.armory.item.ItemInfo;
+import de.mancino.armory.item.ItemSearch;
 import de.mancino.exceptions.ArmoryConnectionException;
 
 public class Armory {
@@ -112,7 +114,7 @@ public class Armory {
             HttpResponse httpResponse = globalHttpClient.execute(httpMethod);
             SAXBuilder parser = new SAXBuilder();
             final Document document = parser.build(httpResponse.getEntity().getContent());
-            LOG.debug("Received XML Data:\n" + xmlToString(document));
+            LOG.trace("Received XML Data:\n" + xmlToString(document));
             return document;
         } catch (Exception e) {
             LOG.error(e.getLocalizedMessage());
@@ -121,12 +123,29 @@ public class Armory {
         }
     }
 
-    public CharacterSheet searchCharacter(final String charName, final String realmName) throws ArmoryConnectionException {
+    public CharacterSheet getCharacterSheet(final String charName, final String realmName) throws ArmoryConnectionException {
         return new CharacterSheet(executeXmlQuery("character-sheet.xml?r=" + realmName + "&n=" + charName));
     }
 
-    public ItemInfo searchItem(final long itemId) throws ArmoryConnectionException {
+    public ItemInfo getItemInfo(final Item item) throws ArmoryConnectionException {
+        return getItemInfo(item.id);
+    }
+
+    public ItemInfo getItemInfo(final long itemId) throws ArmoryConnectionException {
         return new ItemInfo(executeXmlQuery("item-tooltip.xml?i=" + itemId));
+    }
+
+    public ItemSearch searchItem(final String name) throws ArmoryConnectionException {
+        return new ItemSearch(executeXmlQuery("search.xml?searchQuery=" + URLEncoder.encode(name)
+                + "&fl%5Bsource%5D=all"
+                + "&fl%5Btype%5D=all"
+                + "&fl%5BusbleBy%5D=all"
+                + "&fl%5BrqrMin%5D="
+                + "&fl%5BrqrMax%5D="
+                + "&fl%5Brrt%5D=all"
+                + "&advOptName=none"
+                + "&fl%5Bandor%5D=and"
+                + "&searchType=items"));
     }
 
 
@@ -138,8 +157,8 @@ public class Armory {
         final Document searchResults = new Document();
         searchResults.setRootElement(new Element("combined-search-results"));
 
-        LOG.warn(xmlToString(searchResults));
-        for(int start = 0 ; start < MAX_AUCTION_ENTRIES ; start += AUCTION_PAGE_SIZE) {
+        int maxAuctionEntries = MAX_AUCTION_ENTRIES;
+        for(int start = 0 ; start < maxAuctionEntries ; start += AUCTION_PAGE_SIZE) {
             Document partialResult = executeXmlQuery("auctionhouse/search/?"+
                     "sort=rarity&"+
                     "reverse=false"+
@@ -150,7 +169,10 @@ public class Armory {
                     "&f=0"+
                     "&start=" + start +
                     "&pageSize=" + AUCTION_PAGE_SIZE);
-            searchResults.getRootElement().addContent(partialResult.getRootElement().getChild("auctionSearch").detach());
+            maxAuctionEntries = Integer.parseInt(
+                    partialResult.getRootElement().getChild("auctionSearch").getAttribute("total").getValue());
+            searchResults.getRootElement().addContent(
+                    partialResult.getRootElement().getChild("auctionSearch").detach());
         }
 
         return new AuctionSearch(searchResults);

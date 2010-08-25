@@ -14,7 +14,7 @@ public class Price {
     public final long copper;
 
     public Price(String price) {
-        this(Long.parseLong(price));
+        this(price != null ? Long.parseLong(price) : 0);
     }
 
     public Price(long price) {

@@ -13,9 +13,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Parent;
 import org.jdom.xpath.XPath;
 
 
@@ -33,24 +35,29 @@ public class XmlDataWrapper {
     }
 
     protected String getTextContent(String xPath) {
-        // return search(xmlCharSheet.getFirstChild(), xPath, false).getTextContent();
-        Element node = search(xPath, true);
-        if (node != null) {
-            return node.getText();
-        } else {
-            return null;
-        }
+        return getTextContent(xPath, xmlData);
     }
 
-    protected Element search(String xPath, boolean nullAllowed) {
+    protected String getTextContent(String xPath, Parent context) {
+        // return search(xmlCharSheet.getFirstChild(), xPath, false).getTextContent();
+        Object searchResult = search(xPath, context);
+        String text = null;
+        if (searchResult instanceof Element) {
+            return ((Element)searchResult).getText();
+        } else if (searchResult instanceof Attribute) {
+            return ((Attribute)searchResult).getValue();
+        }
+        return text;
+    }
+
+    protected Object search(String xPath) {
+        return search(xPath, xmlData);
+    }
+
+    protected Object search(String xPath, Parent context) {
         try {
             XPath x = XPath.newInstance(xPath);
-            Element element = (Element)x.selectSingleNode(xmlData);
-
-            if(element == null && !nullAllowed) {
-                throw new RuntimeException("No Results for: " + xPath);
-            }
-            return element;
+            return x.selectSingleNode(context);
         } catch (JDOMException e) {
             throw new RuntimeException("Invalid XPath used: " + xPath, e);
         }

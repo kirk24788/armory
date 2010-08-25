@@ -11,6 +11,7 @@ import org.jdom.Element;
 
 import de.mancino.armory.enums.Price;
 import de.mancino.armory.enums.Quality;
+import de.mancino.armory.item.Item;
 
 public class AuctionItem {
     /*
@@ -35,11 +36,14 @@ public class AuctionItem {
     public final long auctionId;
     public final Price currentBid;
     public final Price buyoutPrice;
+    /*
     public final long itemId;
-    public final long itemLevel;
     public final String name;
+    public final Quality quality; */
+    public final Item item;
+
+    public final long itemLevel; // warum ???
     public final Price minimumNextBid;
-    public final Quality quality;
     public final long quantity;
     public final long req;
     public final long seed;
@@ -49,12 +53,18 @@ public class AuctionItem {
     public AuctionItem(Element auctionData) {
         this.auctionId = Long.parseLong(auctionData.getAttribute("auc").getValue());
         this.currentBid = new Price(auctionData.getAttribute("bid").getValue());
-        this.buyoutPrice = new Price(auctionData.getAttribute("buy").getValue());
-        this.itemId = Long.parseLong(auctionData.getAttribute("id").getValue());
+        if (auctionData.getAttribute("buy") != null) {
+            this.buyoutPrice = new Price(auctionData.getAttribute("buy").getValue());
+        } else {
+            this.buyoutPrice = new Price(0);
+        }
+        final long itemId = Long.parseLong(auctionData.getAttribute("id").getValue());
+        final String name = auctionData.getAttribute("n").getValue();
+        final Quality quality = Quality.parse(Integer.parseInt(auctionData.getAttribute("qual").getValue()));
+
+        this.item = new Item(itemId, name, quality);
         this.itemLevel = Long.parseLong(auctionData.getAttribute("ilvl").getValue());
-        this.name = auctionData.getAttribute("n").getValue();
         this.minimumNextBid = new Price(auctionData.getAttribute("nbid").getValue());
-        this.quality = Quality.parse(Integer.parseInt(auctionData.getAttribute("qual").getValue()));
         this.quantity = Long.parseLong(auctionData.getAttribute("quan").getValue());
         this.req = Long.parseLong(auctionData.getAttribute("req").getValue());
         if(auctionData.getAttribute("seed") != null) {
@@ -66,4 +76,7 @@ public class AuctionItem {
         this.time = Long.parseLong(auctionData.getAttribute("time").getValue());
     }
 
+    public boolean hasBuyoutOption() {
+        return this.buyoutPrice.price != 0;
+    }
 }

@@ -27,7 +27,7 @@ public class AuctionSearch extends XmlDataWrapper {
      */
     private static final Log LOG = LogFactory.getLog(AuctionSearch.class);
 
-    public List<AuctionItem> auctionItems;
+    public final List<AuctionItem> auctionItems;
 
     public AuctionSearch(final Document xmlData) {
         super(xmlData);
@@ -45,5 +45,4 @@ public class AuctionSearch extends XmlDataWrapper {
         auctionItems = Collections.unmodifiableList(auctionItemList);
        // Collections.unmodifiableCollection(auctionItems);
     }
-
 }
