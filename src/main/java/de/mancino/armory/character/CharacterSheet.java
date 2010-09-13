@@ -8,8 +8,14 @@
 package de.mancino.armory.character;
 
 
-import org.jdom.Document;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
+import de.mancino.armory.enums.Slot;
+import de.mancino.armory.item.EquipedItem;
 import de.mancino.utils.XmlDataWrapper;
 
 public class CharacterSheet extends XmlDataWrapper {
@@ -48,6 +54,7 @@ public class CharacterSheet extends XmlDataWrapper {
 
     public final int titleId;
 
+    private final Map<Slot, EquipedItem> items;
 
     public CharacterSheet(final Document xmlCharacterSheet) {
         super(xmlCharacterSheet);
@@ -68,9 +75,23 @@ public class CharacterSheet extends XmlDataWrapper {
         this.points = Integer.parseInt(getCharacterAttribute("points"));
         this.raceId = Integer.parseInt(getCharacterAttribute("raceId"));
         this.titleId = Integer.parseInt(getCharacterAttribute("titleId"));
+        this.items = new HashMap<Slot, EquipedItem>();
+        for(Element item : searchAll("//items/item")) {
+            EquipedItem eItem = new EquipedItem((Element) item.clone());
+            items.put(eItem.slot, eItem);
+        }
+    }
+
+    public EquipedItem itemInSlot(Slot slot) {
+        return items.get(slot);
     }
 
     private String getCharacterAttribute(String attribName) {
         return getTextContent("//characterInfo/character/@" + attribName);
+    }
+
+    @Override
+    public String toString() {
+        return fullCharName + "-" + realm + " (" + className + " Lvl" + level + ")";
     }
 }

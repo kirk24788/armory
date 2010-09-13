@@ -10,9 +10,11 @@ package de.mancino;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -36,6 +38,10 @@ public class Test {
      * @param args
      */
     public static void main(String[] args) {
+        // Thu, 27 Apr 2006
+        SimpleDateFormat df = new SimpleDateFormat( "EEE, dd MMM yyyy" );
+        System.err.println(df.format(new Date()));
+        if(true)return;
         // TODO Auto-generated method stub
         try {
             final String passwd = new String(Base64.decodeBase64("bmtnc2VxcGd5N2E="));

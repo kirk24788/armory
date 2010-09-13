@@ -22,7 +22,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -77,14 +76,6 @@ public class Armory {
 
         try {
             postLogin.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-            List<Cookie> cookies = httpClient.getCookieStore().getCookies();
-            if (cookies.isEmpty()) {
-                System.out.println("None");
-            } else {
-                for (int i = 0; i < cookies.size(); i++) {
-                    System.out.println("- " + cookies.get(i).toString());
-                }
-            }
             final HttpResponse postResponse = httpClient.execute(postLogin);
             LOG.trace("Response: " + postResponse.getStatusLine());
             postResponse.getEntity().consumeContent();
@@ -124,7 +115,7 @@ public class Armory {
     }
 
     public CharacterSheet getCharacterSheet(final String charName, final String realmName) throws ArmoryConnectionException {
-        return new CharacterSheet(executeXmlQuery("character-sheet.xml?r=" + realmName + "&n=" + charName));
+        return new CharacterSheet(executeXmlQuery("character-sheet.xml?r=" + realmName + "&n=" + URLEncoder.encode(charName)));
     }
 
     public ItemInfo getItemInfo(final Item item) throws ArmoryConnectionException {
