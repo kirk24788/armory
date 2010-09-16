@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import de.mancino.armory.Armory;
 import de.mancino.armory.auction.AuctionItem;
 import de.mancino.armory.auction.AuctionSearch;
-import de.mancino.armory.enums.Quality;
+import de.mancino.armory.enums.Rarity;
 import de.mancino.exceptions.ArmoryConnectionException;
 
 public class Test {
@@ -72,7 +72,7 @@ public class Test {
             */
 
             final String searchTerm = "Frost Lotus";
-            AuctionSearch as = armory.searchAuction(searchTerm, Quality.POOR);
+            AuctionSearch as = armory.searchAuction(searchTerm, Rarity.POOR);
             LOG.info(as.auctionItems.size() + " items found!");
             List<Long> prices = new ArrayList<Long>(as.auctionItems.size());
             for(AuctionItem ai : as.auctionItems) {

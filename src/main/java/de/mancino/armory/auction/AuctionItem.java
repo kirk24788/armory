@@ -10,7 +10,7 @@ package de.mancino.armory.auction;
 import org.jdom.Element;
 
 import de.mancino.armory.enums.Price;
-import de.mancino.armory.enums.Quality;
+import de.mancino.armory.enums.Rarity;
 import de.mancino.armory.item.Item;
 
 public class AuctionItem {
@@ -60,7 +60,7 @@ public class AuctionItem {
         }
         final long itemId = Long.parseLong(auctionData.getAttribute("id").getValue());
         final String name = auctionData.getAttribute("n").getValue();
-        final Quality quality = Quality.parse(Integer.parseInt(auctionData.getAttribute("qual").getValue()));
+        final Rarity quality = Rarity.parse(Integer.parseInt(auctionData.getAttribute("qual").getValue()));
 
         this.item = new Item(itemId, name, quality);
         this.itemLevel = Long.parseLong(auctionData.getAttribute("ilvl").getValue());

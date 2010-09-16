@@ -11,14 +11,22 @@ package de.mancino.armory.character;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 import org.jdom.Element;
 
 import de.mancino.armory.enums.Slot;
 import de.mancino.armory.item.EquipedItem;
+import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.utils.XmlDataWrapper;
 
 public class CharacterSheet extends XmlDataWrapper {
+
+    /**
+     * Logger instance of this class.
+     */
+    private static final Log LOG = LogFactory.getLog(CharacterSheet.class);
 
     public final String battleGroup;
 
@@ -56,8 +64,9 @@ public class CharacterSheet extends XmlDataWrapper {
 
     private final Map<Slot, EquipedItem> items;
 
-    public CharacterSheet(final Document xmlCharacterSheet) {
+    public CharacterSheet(final Document xmlCharacterSheet) throws ArmoryConnectionException {
         super(xmlCharacterSheet);
+        try {
         this.battleGroup = getCharacterAttribute("battleGroup");
         this.className = getCharacterAttribute("class");
         this.factionName = getCharacterAttribute("faction");
@@ -79,6 +88,11 @@ public class CharacterSheet extends XmlDataWrapper {
         for(Element item : searchAll("//items/item")) {
             EquipedItem eItem = new EquipedItem((Element) item.clone());
             items.put(eItem.slot, eItem);
+        }
+        } catch (NumberFormatException e) {
+            final String msg = "Data from Armory seems to be invalid!";
+            LOG.error(msg, e);
+            throw new ArmoryConnectionException(msg, e);
         }
     }
 

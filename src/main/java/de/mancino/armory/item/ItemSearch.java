@@ -17,7 +17,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import de.mancino.armory.auction.AuctionSearch;
-import de.mancino.armory.enums.Quality;
+import de.mancino.armory.enums.Rarity;
 import de.mancino.utils.XmlDataWrapper;
 
 public class ItemSearch extends XmlDataWrapper {
@@ -34,7 +34,7 @@ public class ItemSearch extends XmlDataWrapper {
         for(Element auctionItemElement : searchAll("//item")) {
             final long id = Long.parseLong(getTextContent("@id", auctionItemElement));
             final String name = getTextContent("@name", auctionItemElement);
-            final Quality quality = Quality.parse(Integer.parseInt(getTextContent("@rarity", auctionItemElement)));
+            final Rarity quality = Rarity.parse(Integer.parseInt(getTextContent("@rarity", auctionItemElement)));
             tmpItemList.add(new Item(id, name, quality));
         }
         item = Collections.unmodifiableList(tmpItemList);

@@ -20,6 +20,7 @@ public class RssFeed {
     private String pubDate;
     private final List<RssEntry> entries = new ArrayList<RssEntry>();
     public boolean needsUpdate = true;
+    private int guidCounter = 1;
 
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "EEE, dd MMM yyyy" );
 
@@ -33,7 +34,9 @@ public class RssFeed {
 
     public void addEntry(final RssEntry entry) {
         pubDate = DATE_FORMAT.format(new Date());
-        entries.add(entry);
+        entries.add(0, entry);
+        entry.updateGuid("http://www.mancino-net.de/spy/" + guidCounter);
+        guidCounter++;
         needsUpdate = true;
     }
 

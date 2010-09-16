@@ -7,14 +7,14 @@
  */
 package de.mancino.armory.item;
 
-import de.mancino.armory.enums.Quality;
+import de.mancino.armory.enums.Rarity;
 
 public class Item {
     public final long id;
     public final String name;
-    public final Quality quality;
+    public final Rarity quality;
 
-    public Item(final long id, final String name, final Quality quality) {
+    public Item(final long id, final String name, final Rarity quality) {
         this.id = id;
         this.name = name;
         this.quality = quality;

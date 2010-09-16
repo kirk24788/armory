@@ -11,7 +11,7 @@ import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import de.mancino.armory.enums.Quality;
+import de.mancino.armory.enums.Rarity;
 import de.mancino.armory.enums.Slot;
 import de.mancino.utils.XmlDataWrapper;
 
@@ -30,7 +30,7 @@ public class EquipedItem extends XmlDataWrapper {
     public final int durability;
     public final int displayInfoId;
     public final Slot slot;
-    public final Quality quality;
+    public final Rarity quality;
     public final int level;
     public final String name;
     public final int id;
@@ -41,7 +41,7 @@ public class EquipedItem extends XmlDataWrapper {
             this.durability = itemElement.getAttribute("durability").getIntValue();
             this.displayInfoId = itemElement.getAttribute("displayInfoId").getIntValue();
             this.slot = Slot.parse(itemElement.getAttribute("slot").getIntValue());
-            this.quality = Quality.parse(itemElement.getAttribute("rarity").getIntValue());
+            this.quality = Rarity.parse(itemElement.getAttribute("rarity").getIntValue());
             this.level = itemElement.getAttribute("level").getIntValue();
             this.name = itemElement.getAttribute("name").getValue();
             this.id = itemElement.getAttribute("id").getIntValue();

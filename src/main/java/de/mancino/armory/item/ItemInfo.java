@@ -10,7 +10,7 @@ package de.mancino.armory.item;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
 
-import de.mancino.armory.enums.Quality;
+import de.mancino.armory.enums.Rarity;
 import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.utils.XmlDataWrapper;
 
@@ -18,7 +18,7 @@ public class ItemInfo extends XmlDataWrapper {
 
     public final int itemId;
     public final String name;
-    public final Quality quality;
+    public final Rarity quality;
     public final int bonding;
     public final int classId;
     public final int armor;
@@ -67,7 +67,7 @@ public class ItemInfo extends XmlDataWrapper {
         super(document);
         this.itemId = getAttributeAsInteger("id");
         this.name = getAttributeAsString("name");
-        this.quality = Quality.parse(getAttributeAsInteger("overallQualityId"));
+        this.quality = Rarity.parse(getAttributeAsInteger("overallQualityId"));
         this.bonding = getAttributeAsInteger("bonding");
         this.classId = getAttributeAsInteger("classId");
 

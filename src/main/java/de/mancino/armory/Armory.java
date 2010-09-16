@@ -10,9 +10,11 @@ package de.mancino.armory;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,18 +27,22 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.jboss.resteasy.client.ClientRequest;
+import org.jboss.resteasy.client.ClientResponse;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
 import de.mancino.armory.auction.AuctionSearch;
-import de.mancino.armory.character.CharacterSheet;
-import de.mancino.armory.enums.Quality;
-import de.mancino.armory.item.Item;
-import de.mancino.armory.item.ItemInfo;
+import de.mancino.armory.enums.Rarity;
 import de.mancino.armory.item.ItemSearch;
+import de.mancino.armory.xml.Page;
+import de.mancino.armory.xml.armorysearch.ArmorySearch;
+import de.mancino.armory.xml.characterInfo.CharacterInfo;
+import de.mancino.armory.xml.itemtooltips.ItemTooltip;
 import de.mancino.exceptions.ArmoryConnectionException;
+import de.mancino.utils.EncodingUtils;
 
 public class Armory {
     private static final int AUCTION_PAGE_SIZE = 40;
@@ -97,10 +103,13 @@ public class Armory {
         return httpClient;
     }
 
+    @Deprecated
     protected Document executeXmlQuery(final String armoryRequest) throws ArmoryConnectionException {
         final String armoryUrl = ARMORY_BASE_URL + armoryRequest + "&rhtml=n";
         LOG.debug("Executing GET Method: " + armoryUrl);
         final HttpGet httpMethod = new HttpGet(armoryUrl);
+        httpMethod.addHeader("User-Agent", "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.8.1.10) Gecko/20071115 Firefox/2.0.0.10");
+        httpMethod.addHeader("Pragma", "no-cache");
         try {
             HttpResponse httpResponse = globalHttpClient.execute(httpMethod);
             SAXBuilder parser = new SAXBuilder();
@@ -114,20 +123,48 @@ public class Armory {
         }
     }
 
-    public CharacterSheet getCharacterSheet(final String charName, final String realmName) throws ArmoryConnectionException {
-        return new CharacterSheet(executeXmlQuery("character-sheet.xml?r=" + realmName + "&n=" + URLEncoder.encode(charName)));
+    public CharacterInfo getCharacterSheet(final String charName, final String realmName) throws ArmoryConnectionException {
+        return executeRestQuery("character-sheet.xml?r=" + realmName + "&n=" + EncodingUtils.urlEncode(charName, "UTF-8")).characterInfo;
     }
 
-    public ItemInfo getItemInfo(final Item item) throws ArmoryConnectionException {
-        return getItemInfo(item.id);
+    public ItemTooltip getItemInfo(final long itemId) throws ArmoryConnectionException {
+        return executeRestQuery("item-tooltip.xml?i=" + itemId).itemTooltips.get(0);
     }
 
-    public ItemInfo getItemInfo(final long itemId) throws ArmoryConnectionException {
-        return new ItemInfo(executeXmlQuery("item-tooltip.xml?i=" + itemId));
+    public ArmorySearch searchArmory(final String searchTerm) throws ArmoryConnectionException {
+        return searchArmory(searchTerm, "all");
+    }
+
+
+    public ArmorySearch searchArmory(final String searchTerm, final String searchType) throws ArmoryConnectionException {
+        return executeRestQuery("/search.xml?searchQuery=" + EncodingUtils.urlEncode(searchTerm, "UTF-8")
+            + "&searchType=" + EncodingUtils.urlEncode(searchType, "UTF-8")).armorySearch;
+    }
+
+    protected Page executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
+        final String requestUrl = ARMORY_BASE_URL + armoryRequest + "&rhtml=n";
+        LOG.debug("Executing GET Method: " + requestUrl);
+        final ClientRequest request = new ClientRequest(requestUrl);
+        request.accept(MediaType.APPLICATION_XML);
+        ClientResponse<Page> response;
+        try {
+            if(LOG.isTraceEnabled()) {
+                LOG.trace(request.get(String.class).getEntity());
+            }
+            response = request.get(Page.class);
+        } catch (Exception e) {
+            throw new ArmoryConnectionException("Error connection to Armory: " + requestUrl, e);
+        }
+        if(response.getResponseStatus() == Status.OK) {
+            return response.getEntity();
+        } else {
+            throw new ArmoryConnectionException("Got '" + response.getResponseStatus()
+                    + "' Response from Armory: " + requestUrl);
+        }
     }
 
     public ItemSearch searchItem(final String name) throws ArmoryConnectionException {
-        return new ItemSearch(executeXmlQuery("search.xml?searchQuery=" + URLEncoder.encode(name)
+        return new ItemSearch(executeXmlQuery("search.xml?searchQuery=" + EncodingUtils.urlEncode(name, "UTF-8")
                 + "&fl%5Bsource%5D=all"
                 + "&fl%5Btype%5D=all"
                 + "&fl%5BusbleBy%5D=all"
@@ -140,7 +177,7 @@ public class Armory {
     }
 
 
-    public AuctionSearch searchAuction(final String searchTerm, Quality quality) throws ArmoryConnectionException {
+    public AuctionSearch searchAuction(final String searchTerm, Rarity quality) throws ArmoryConnectionException {
         // TODO: Optimieren, u.U. sind die letzten Requests unnötig, wenn bereits vorher keine mehr gefunden wurdne...
         /*
          GET /auctionhouse/search/?sort=rarity&reverse=false&filterId=-1&n=adder&maxLvl=0&minLvl=0&qual=0&start=20&total=59&pageSize=20&rhtml=true&cn=Chevron&r=Forscherliga&f=0&sk=0330fce3-9be0-4adf-b57b-78f09474b7f4 HTTP/1.1
@@ -153,7 +190,7 @@ public class Armory {
             Document partialResult = executeXmlQuery("auctionhouse/search/?"+
                     "sort=rarity&"+
                     "reverse=false"+
-                    "&n="+ URLEncoder.encode(searchTerm) +
+                    "&n="+ EncodingUtils.urlEncode(searchTerm, "UTF-8") +
                     "&qual="+ quality.numericValue +
                     "&cn=Chevron"+
                     "&r=Forscherliga"+
@@ -181,4 +218,6 @@ public class Armory {
             throw new RuntimeException(e);
         }
     }
+
+
 }
