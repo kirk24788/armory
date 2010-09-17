@@ -11,21 +11,21 @@ package de.mancino.utils;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Parent;
 import org.jdom.xpath.XPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-
+@Deprecated
 public class XmlDataWrapper {
     /**
      * Logger instance of this class.
      */
-    private static final Log LOG = LogFactory.getLog(XmlDataWrapper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(XmlDataWrapper.class);
 
     private final Document xmlData;
 

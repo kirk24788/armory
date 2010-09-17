@@ -16,8 +16,6 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -29,17 +27,19 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.plugins.providers.DataSourceProvider;
+import org.jboss.resteasy.plugins.providers.StringTextStar;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jdom.Document;
-import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.mancino.armory.auction.AuctionSearch;
-import de.mancino.armory.enums.Rarity;
-import de.mancino.armory.item.ItemSearch;
 import de.mancino.armory.xml.Page;
 import de.mancino.armory.xml.armorysearch.ArmorySearch;
 import de.mancino.armory.xml.characterInfo.CharacterInfo;
+import de.mancino.armory.xml.enums.Quality;
 import de.mancino.armory.xml.itemtooltips.ItemTooltip;
 import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.utils.EncodingUtils;
@@ -52,7 +52,7 @@ public class Armory {
     /**
      * Logger instance of this class.
      */
-    private static final Log LOG = LogFactory.getLog(Armory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Armory.class);
 
     private static final String REGION = "eu";
     private static final String ARMORY_BASE_URL = "http://" + REGION + ".wowarmory.com/";
@@ -62,6 +62,16 @@ public class Armory {
 
     public Armory(final String accountName, final String password) throws ArmoryConnectionException {
         globalHttpClient = login(accountName, password);
+        /*
+        ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
+        RegisterBuiltin.register(providerFactory);*/
+
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());
+        /*
+         * org.jboss.resteasy.plugins.providers.
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());*/
     }
 
     private HttpClient login(final String accountName, final String password) throws ArmoryConnectionException {
@@ -145,12 +155,13 @@ public class Armory {
         final String requestUrl = ARMORY_BASE_URL + armoryRequest + "&rhtml=n";
         LOG.debug("Executing GET Method: " + requestUrl);
         final ClientRequest request = new ClientRequest(requestUrl);
-        request.accept(MediaType.APPLICATION_XML);
         ClientResponse<Page> response;
         try {
             if(LOG.isTraceEnabled()) {
+                request.accept("*/*; charset=UTF-8");
                 LOG.trace(request.get(String.class).getEntity());
             }
+            request.accept(MediaType.APPLICATION_XML);
             response = request.get(Page.class);
         } catch (Exception e) {
             throw new ArmoryConnectionException("Error connection to Armory: " + requestUrl, e);
@@ -163,7 +174,9 @@ public class Armory {
         }
     }
 
-    public ItemSearch searchItem(final String name) throws ArmoryConnectionException {
+    public void searchItem(final String name) throws ArmoryConnectionException {
+        // TODO:
+        /*
         return new ItemSearch(executeXmlQuery("search.xml?searchQuery=" + EncodingUtils.urlEncode(name, "UTF-8")
                 + "&fl%5Bsource%5D=all"
                 + "&fl%5Btype%5D=all"
@@ -174,14 +187,17 @@ public class Armory {
                 + "&advOptName=none"
                 + "&fl%5Bandor%5D=and"
                 + "&searchType=items"));
+                */
     }
 
 
-    public AuctionSearch searchAuction(final String searchTerm, Rarity quality) throws ArmoryConnectionException {
+    public void searchAuction(final String searchTerm, Quality quality) throws ArmoryConnectionException {
         // TODO: Optimieren, u.U. sind die letzten Requests unnötig, wenn bereits vorher keine mehr gefunden wurdne...
         /*
          GET /auctionhouse/search/?sort=rarity&reverse=false&filterId=-1&n=adder&maxLvl=0&minLvl=0&qual=0&start=20&total=59&pageSize=20&rhtml=true&cn=Chevron&r=Forscherliga&f=0&sk=0330fce3-9be0-4adf-b57b-78f09474b7f4 HTTP/1.1
          */
+        // TODO:
+        /*
         final Document searchResults = new Document();
         searchResults.setRootElement(new Element("combined-search-results"));
 
@@ -204,6 +220,7 @@ public class Armory {
         }
 
         return new AuctionSearch(searchResults);
+        */
     }
 
 

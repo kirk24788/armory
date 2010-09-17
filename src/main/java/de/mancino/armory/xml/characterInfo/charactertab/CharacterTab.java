@@ -11,7 +11,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
 
 import de.mancino.armory.xml.characterInfo.charactertab.basestats.BaseStats;
 import de.mancino.armory.xml.characterInfo.charactertab.characterbars.CharacterBars;
@@ -131,7 +130,7 @@ TODO:
     @XmlElement(name = "item")
     @XmlElementWrapper(name="items")
     public List<Item> items;
-    @XmlTransient
+
     public Item getItemInSlot(final Slot slot) {
         for(Item item : items) {
             if(item.slot.equals(slot)) {

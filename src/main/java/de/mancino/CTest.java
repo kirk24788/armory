@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.mancino.armory.Armory;
 import de.mancino.armory.xml.armorysearch.ArmorySearch;
@@ -29,7 +29,7 @@ public class CTest {
     /**
      * Logger instance of this class.
      */
-    private static final Log LOG = LogFactory.getLog(Test.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CTest.class);
 
     private static final long POLLING_INTERVAL_IN_MS = 5L * 60L * 1000L;
 
@@ -66,7 +66,7 @@ public class CTest {
             Item item = character.characterTab.getItemInSlot(slot);
             message.append(" ").append(slot).append(": ");
             if (item!=null) {
-                message.append(item);
+                message.append(item.name);
             } else {
                 message.append("None");
             }
@@ -116,6 +116,7 @@ public class CTest {
     private void checkLevel(ArmorySearch armorySearch) {
         for(Character character : armorySearch.searchResults.characters) {
             if((character.realm).equals(REALM_NAME)) {
+                LOG.debug("Current Level: " + character.level);
                 if(currentLevel < character.level) {
                     final String message = CHAR_NAME + " has reached Level " + character.level;
                     LOG.info(message);
