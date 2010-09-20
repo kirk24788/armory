@@ -86,4 +86,20 @@ public class Item {
     public int seed;
     @XmlAttribute
     public Slot slot;
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj ||
+               (obj instanceof Item && ((Item)obj).id == this.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

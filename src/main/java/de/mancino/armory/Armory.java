@@ -78,7 +78,7 @@ public class Armory {
         final DefaultHttpClient httpClient = new DefaultHttpClient();
         //httpClient. getParams().setCookiePolicy(CookiePolicy.RFC_2109);
         final String armoryUrl = BATTLENET_BASE_URL + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
-
+        httpClient.setRedirectHandler(new PostRedirectHandler());
         if(LOG.isDebugEnabled()) {
             LOG.debug("Logging in to Armory ("+accountName +":" + password.charAt(0) + "***"
                     + password.charAt(password.length()-1) + "): " + armoryUrl);
@@ -93,18 +93,8 @@ public class Armory {
         try {
             postLogin.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
             final HttpResponse postResponse = httpClient.execute(postLogin);
-            LOG.trace("Response: " + postResponse.getStatusLine());
             postResponse.getEntity().consumeContent();
-            final String redirectUrl = postResponse.getHeaders("Location")[0].getValue();
-            LOG.trace("Login redirected to: " + redirectUrl);
-            final HttpGet loginRedirect = new HttpGet(redirectUrl);
-            try {
-                final HttpResponse redirectResponse = httpClient.execute(loginRedirect);
-                LOG.trace("Response: " + redirectResponse.getStatusLine());
-                redirectResponse.getEntity().consumeContent();
-            } catch (IOException e) {
-                throw new ArmoryConnectionException("Login failed!", e);
-            }
+            LOG.debug("Response: " + postResponse.getStatusLine());
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
