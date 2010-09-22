@@ -7,8 +7,6 @@
  */
 package de.mancino;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.commons.codec.binary.Base64;
@@ -22,10 +20,11 @@ import de.mancino.armory.xml.characterInfo.CharacterInfo;
 import de.mancino.armory.xml.characterInfo.charactertab.items.Item;
 import de.mancino.armory.xml.enums.Slot;
 import de.mancino.exceptions.ArmoryConnectionException;
-import de.mancino.rss.RssEntry;
-import de.mancino.rss.RssFeed;
+import de.mancino.rss.RssClient;
 
 public class CTest {
+    private static final String FEED_NAME = "HeliosSpy";
+
     /**
      * Logger instance of this class.
      */
@@ -40,7 +39,7 @@ public class CTest {
     private static final String ITEM_URL = "http://eu.wowarmory.com/item-info.xml?i=";
 
     private final HashMap<Slot, Item> items;
-    private final RssFeed feed;
+    private final RssClient rssClient;
     /**
      * @param args
      * @throws InterruptedException
@@ -55,8 +54,9 @@ public class CTest {
     // http://eu.wowarmory.com/item-info.xml?i=3047
     public CTest() throws ArmoryConnectionException {
         final StringBuffer message = new StringBuffer();
+        rssClient = new RssClient("http://www.mancino-net.de:8080", "mario", "Laufae8s");
         final CharacterInfo character = logIn().getCharacterSheet(CHAR_NAME, REALM_NAME);
-        final String title = "Surveillance initialized for " + character;
+        final String title = "Surveillance initialized for " + character.character.name;
         currentLevel = character.character.level;
         LOG.info(title);
         message.append("Current Level: ").append(currentLevel).append("\n");
@@ -74,19 +74,8 @@ public class CTest {
             items.put(slot, item);
         }
         LOG.info(message.toString());
-        feed = new RssFeed(new File("/var/www/http/spy.xml"), CHAR_NAME + " Spy", CHAR_URL, CHAR_NAME + " Spy");
-        feed.addEntry(new RssEntry(title, message.toString(), CHAR_URL));
-        updateFeed();
-    }
-    /**
-     * @param feed
-     */
-    private void updateFeed() {
-        try {
-            feed.write();
-        } catch (IOException e) {
-            LOG.error(e.getLocalizedMessage());
-        }
+        rssClient.createFeed(FEED_NAME, "Helios Spy", "Helios Spy Feed");
+        rssClient.addEntry(FEED_NAME, title, message.toString());
     }
 
     public void run() throws InterruptedException {
@@ -98,10 +87,7 @@ public class CTest {
                 ArmorySearch charSearch = armory.searchArmory(CHAR_NAME);
                 checkLevel(charSearch);
                 checkItems(characterInfo);
-                feed.write();
             } catch (ArmoryConnectionException e) {
-                LOG.error(e.getLocalizedMessage());
-            } catch (IOException e) {
                 LOG.error(e.getLocalizedMessage());
             }
         }
@@ -120,7 +106,7 @@ public class CTest {
                 if(currentLevel < character.level) {
                     final String message = CHAR_NAME + " has reached Level " + character.level;
                     LOG.info(message);
-                    feed.addEntry(new RssEntry("Level Up! (" + character.level + ")" , message, CHAR_URL));
+                    rssClient.addEntry(FEED_NAME, "Level Up! (" + character.level + ")", message.toString());
                     currentLevel = character.level;
                 }
             }
@@ -133,12 +119,12 @@ public class CTest {
             if(currentItem != null && !currentItem.equals(items.get(slot))) {
                 final String message = character.character.name + " received new " + slot + "-Item: " + currentItem;
                 LOG.info(message);
-                feed.addEntry(new RssEntry("New Item: "+ currentItem.name, message, ITEM_URL + currentItem.id));
+                rssClient.addEntry(FEED_NAME, "New Item: "+ currentItem.name, message);
                 items.put(slot, currentItem);
             } else if(currentItem == null && items.get(slot)!=null) {
                 final String message = character.character.name + " lost " + slot + "-Item: " + items.get(slot);
                 LOG.info(message);
-                feed.addEntry(new RssEntry("Lost Item: "+ items.get(slot).name, message, ITEM_URL + items.get(slot).id));
+                rssClient.addEntry(FEED_NAME, "Lost Item: "+ items.get(slot).name, message);
                 items.remove(slot);
             }
         }

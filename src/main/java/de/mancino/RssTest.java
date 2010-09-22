@@ -7,25 +7,37 @@
  */
 package de.mancino;
 
-import java.io.File;
 import java.io.IOException;
 
-import de.mancino.rss.RssEntry;
-import de.mancino.rss.RssFeed;
+import de.mancino.rss.RssClient;
 
 public class RssTest {
-    public static void main(String[] args) throws IOException {
-        RssFeed feed = new RssFeed(new File("/var/www/http/rss_text.xml"), "MyTest Spy", "http://www.mancino-net.de", "Spy Description");
-
-        int id = 1;
-        while(true) {
-            try {
-                feed.addEntry(new RssEntry("Title " + id++ , "My Message: " + System.currentTimeMillis(), "http://www.mancino-net.de/"));
-                feed.write();
-                Thread.sleep(60000L);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    final static String data ="Current Level: 46" +
+"Current Items:" +
+" Head: Phalanx Headguard" +
+" Neck: Pendant of the Agate Shield" +
+" Shoulder: Glimmering Mail Pauldrons" +
+" Shirt: Squire's Shirt" +
+" Chest: Banded Armor" +
+" Belt: Mail Combat Belt" +
+" Legs: Green Iron Leggings" +
+" Feet: Ravasaur Scale Boots" +
+" Wrist: Green Iron Bracers" +
+ "Gloves: Lambent Scale Gloves" +
+" Finger 1: Blush Ember Ring" +
+" Finger 2: Tundra Ring" +
+" Trinket 1: None" +
+" Trinket 2: None" +
+" Back: Banded Cloak" +
+" Main Hand: Thornstone Sledgehammer" +
+" Off Hand: None" +
+" Ranged: None" +
+" Tabard: None";
+    public static void main(String[] args) throws IOException, InterruptedException {
+        RssClient c = new RssClient("http://www.mancino-net.de:8080", "mario", "Laufae8s");
+        c.createFeed("Spy", "Spy on me", "Test");
+        c.addEntry("Spy", "Surveillance initialized for Hélios",data);
+        c.addEntry("Spy", "E 2", "dies ist der zweite");
+        //c.deleteFeed("Spy");
     }
 }

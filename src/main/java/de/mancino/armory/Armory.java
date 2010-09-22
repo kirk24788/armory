@@ -28,6 +28,7 @@ import org.apache.http.protocol.HTTP;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.plugins.providers.DataSourceProvider;
+import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.providers.StringTextStar;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.jdom.Document;
@@ -68,6 +69,7 @@ public class Armory {
 
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new FormUrlEncodedProvider());
         /*
          * org.jboss.resteasy.plugins.providers.
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
