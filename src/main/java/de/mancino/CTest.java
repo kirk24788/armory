@@ -23,20 +23,18 @@ import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.rss.RssClient;
 
 public class CTest {
-    private static final String FEED_NAME = "HeliosSpy";
+    private static final String FEED_NAME = "LooxSpy";
 
     /**
      * Logger instance of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(CTest.class);
 
-    private static final long POLLING_INTERVAL_IN_MS = 5L * 60L * 1000L;
+    private static final long POLLING_INTERVAL_IN_MS = 15L * 60L * 1000L;
 
     private int currentLevel;
-    private static final String CHAR_NAME = "Hélios";
+    private static final String CHAR_NAME = "Lóóx";
     private static final String REALM_NAME = "Forscherliga";
-    private static final String CHAR_URL = "http://eu.wowarmory.com/character-sheet.xml?r=Forscherliga&cn=H%C3%A9lios";
-    private static final String ITEM_URL = "http://eu.wowarmory.com/item-info.xml?i=";
 
     private final HashMap<Slot, Item> items;
     private final RssClient rssClient;
@@ -50,7 +48,7 @@ public class CTest {
         // new CTest();
         new CTest().run();
     }
-//
+    //
     // http://eu.wowarmory.com/item-info.xml?i=3047
     public CTest() throws ArmoryConnectionException {
         final StringBuffer message = new StringBuffer();
@@ -85,8 +83,9 @@ public class CTest {
                 final Armory armory = logIn();
                 CharacterInfo characterInfo = armory.getCharacterSheet(CHAR_NAME, REALM_NAME);
                 ArmorySearch charSearch = armory.searchArmory(CHAR_NAME);
-                checkLevel(charSearch);
-                checkItems(characterInfo);
+                if(checkLevel(charSearch)) {
+                    checkItems(characterInfo);
+                }
             } catch (ArmoryConnectionException e) {
                 LOG.error(e.getLocalizedMessage());
             }
@@ -95,11 +94,11 @@ public class CTest {
 
     private Armory logIn() throws ArmoryConnectionException {
         final String passwd = new String(Base64.decodeBase64("bmtnc2VxcGd5N2E="));
-        final Armory armory = new Armory("mario@mancino-net.de", passwd);
+        final Armory armory = new Armory(); //new Armory("mario@mancino-net.de", passwd);
         return armory;
     }
 
-    private void checkLevel(ArmorySearch armorySearch) {
+    private boolean checkLevel(ArmorySearch armorySearch) {
         for(Character character : armorySearch.searchResults.characters) {
             if((character.realm).equals(REALM_NAME)) {
                 LOG.debug("Current Level: " + character.level);
@@ -108,9 +107,11 @@ public class CTest {
                     LOG.info(message);
                     rssClient.addEntry(FEED_NAME, "Level Up! (" + character.level + ")", message.toString());
                     currentLevel = character.level;
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     private void checkItems(final CharacterInfo character) {

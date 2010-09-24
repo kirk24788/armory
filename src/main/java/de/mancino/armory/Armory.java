@@ -61,6 +61,13 @@ public class Armory {
 
     private final HttpClient globalHttpClient;
 
+    public Armory() {
+        globalHttpClient = new DefaultHttpClient();
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new FormUrlEncodedProvider());
+    }
+
     public Armory(final String accountName, final String password) throws ArmoryConnectionException {
         globalHttpClient = login(accountName, password);
         /*
