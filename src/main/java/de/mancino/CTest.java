@@ -33,7 +33,7 @@ public class CTest {
     private static final long POLLING_INTERVAL_IN_MS = 15L * 60L * 1000L;
 
     private int currentLevel;
-    private static final String CHAR_NAME = "Lóóx";
+    private static final String CHAR_NAME = "Sædina";
     private static final String REALM_NAME = "Forscherliga";
 
     private final HashMap<Slot, Item> items;

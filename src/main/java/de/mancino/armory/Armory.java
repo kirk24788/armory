@@ -16,17 +16,19 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.providers.StringTextStar;
@@ -39,6 +41,8 @@ import org.slf4j.LoggerFactory;
 
 import de.mancino.armory.xml.Page;
 import de.mancino.armory.xml.armorysearch.ArmorySearch;
+import de.mancino.armory.xml.auctionsearch.AuctionItem;
+import de.mancino.armory.xml.auctionsearch.AuctionSearch;
 import de.mancino.armory.xml.characterInfo.CharacterInfo;
 import de.mancino.armory.xml.enums.Quality;
 import de.mancino.armory.xml.itemtooltips.ItemTooltip;
@@ -48,8 +52,6 @@ import de.mancino.utils.EncodingUtils;
 public class Armory {
     private static final int AUCTION_PAGE_SIZE = 40;
 
-    private static final int MAX_AUCTION_ENTRIES = 200;
-
     /**
      * Logger instance of this class.
      */
@@ -58,8 +60,10 @@ public class Armory {
     private static final String REGION = "eu";
     private static final String ARMORY_BASE_URL = "http://" + REGION + ".wowarmory.com/";
     private static final String BATTLENET_BASE_URL = "https://" + REGION + ".battle.net/";
+    private String primaryCharname;
+    private String primaryRealm;
 
-    private final HttpClient globalHttpClient;
+    private final DefaultHttpClient globalHttpClient;
 
     public Armory() {
         globalHttpClient = new DefaultHttpClient();
@@ -68,7 +72,8 @@ public class Armory {
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new FormUrlEncodedProvider());
     }
 
-    public Armory(final String accountName, final String password) throws ArmoryConnectionException {
+    public Armory(final String accountName, final String password,
+            final String primaryCharname, final String primaryRealm) throws ArmoryConnectionException {
         globalHttpClient = login(accountName, password);
         /*
         ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
@@ -81,9 +86,12 @@ public class Armory {
          * org.jboss.resteasy.plugins.providers.
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());*/
+        selectPrimaryCharacter(primaryCharname, primaryRealm);
+        this.primaryCharname = primaryCharname;
+        this.primaryRealm = primaryRealm;
     }
 
-    private HttpClient login(final String accountName, final String password) throws ArmoryConnectionException {
+    private DefaultHttpClient login(final String accountName, final String password) throws ArmoryConnectionException {
         final DefaultHttpClient httpClient = new DefaultHttpClient();
         //httpClient. getParams().setCookiePolicy(CookiePolicy.RFC_2109);
         final String armoryUrl = BATTLENET_BASE_URL + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
@@ -144,21 +152,87 @@ public class Armory {
         return searchArmory(searchTerm, "all");
     }
 
+    public void buyAuction(final AuctionItem item) throws ArmoryConnectionException {
+        LOG.info("Buying Auction {} ({})", item.auctionId, item.name);
+        executeJsonPost("auctionhouse/bid.json",
+                new BasicNameValuePair("auc", String.valueOf(item.auctionId)),
+                new BasicNameValuePair("money", String.valueOf(item.buy)),
+                new BasicNameValuePair("sk", getSkValue()));
+    }
+
+    protected String getSkValue() throws ArmoryConnectionException {
+        try {
+            final HttpGet summaryGet = new HttpGet(ARMORY_BASE_URL + "auctionhouse/index.xml#summary");
+            final HttpResponse summaryResponse = globalHttpClient.execute(summaryGet);
+            summaryResponse.getEntity().consumeContent();
+            final String cookieName = "auction_sk";
+            LOG.debug("Searching for '{}' cookie", cookieName);
+            for(Cookie cookie : globalHttpClient.getCookieStore().getCookies()) {
+                LOG.trace(" {}: {}", cookie.getName(), cookie.getValue());
+                if(cookie.getName().equals(cookieName)) {
+                    return cookie.getValue();
+                }
+            }
+        } catch (Exception e) {
+            throw new ArmoryConnectionException("Error getting auctionhause summary page", e);
+        }
+        return "";
+    }
 
     public ArmorySearch searchArmory(final String searchTerm, final String searchType) throws ArmoryConnectionException {
-        return executeRestQuery("/search.xml?searchQuery=" + EncodingUtils.urlEncode(searchTerm, "UTF-8")
-            + "&searchType=" + EncodingUtils.urlEncode(searchType, "UTF-8")).armorySearch;
+        return executeRestQuery("search.xml?searchQuery=" + EncodingUtils.urlEncode(searchTerm, "UTF-8")
+                + "&searchType=" + EncodingUtils.urlEncode(searchType, "UTF-8")).armorySearch;
+    }
+
+    public void selectPrimaryCharacter(final String charName, final String realm) throws ArmoryConnectionException {
+        LOG.info("Selecting Primary Char '{}' on realm '{}'", charName, realm);
+        executeJsonPost("vault/character-select-submit.json",
+                new BasicNameValuePair("cn", charName),
+                new BasicNameValuePair("r", realm));
+        this.primaryCharname = charName;
+        this.primaryRealm = realm;
+
+    }
+
+    protected void executeJsonPost(final String requestPath, BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+        final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
+        try {
+            LOG.debug("Executing 'JSON' POST Method: " + jsonPostUrl);
+            final HttpPost buyoutPost = new HttpPost(jsonPostUrl);
+            if(parameters.length > 0) {
+                List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+                for(BasicNameValuePair parameter : parameters) {
+                    nvps.add(parameter);
+                }
+                try {
+                    buyoutPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            buyoutPost.setHeader("Accept", "application/json, text/javascript, */*");
+            final HttpResponse summaryResponse = globalHttpClient.execute(buyoutPost);
+            if(LOG.isTraceEnabled()) {
+                LOG.trace(IOUtils.toString(summaryResponse.getEntity().getContent()));
+            } else {
+                summaryResponse.getEntity().consumeContent();
+            }
+        } catch (Exception e) {
+            throw new ArmoryConnectionException("Error sending JSON Request: " + jsonPostUrl, e);
+        }
     }
 
     protected Page executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
         final String requestUrl = ARMORY_BASE_URL + armoryRequest + "&rhtml=n";
         LOG.debug("Executing GET Method: " + requestUrl);
-        final ClientRequest request = new ClientRequest(requestUrl);
+        final ClientRequest request = new ClientRequest(requestUrl, new ApacheHttpClient4Executor(globalHttpClient));
         ClientResponse<Page> response;
         try {
+            Thread.sleep(1000); // Grace Period, weil 2 Requests kurz hintereinander zu Problemen führen können!
             if(LOG.isTraceEnabled()) {
                 request.accept("*/*; charset=UTF-8");
                 LOG.trace(request.get(String.class).getEntity());
+                Thread.sleep(2000); // Grace Period, weil 2 Requests kurz hintereinander zu Problemen führen können!
             }
             request.accept(MediaType.APPLICATION_XML);
             response = request.get(Page.class);
@@ -186,40 +260,49 @@ public class Armory {
                 + "&advOptName=none"
                 + "&fl%5Bandor%5D=and"
                 + "&searchType=items"));
-                */
+         */
     }
 
 
-    public void searchAuction(final String searchTerm, Quality quality) throws ArmoryConnectionException {
-        // TODO: Optimieren, u.U. sind die letzten Requests unnötig, wenn bereits vorher keine mehr gefunden wurdne...
-        /*
-         GET /auctionhouse/search/?sort=rarity&reverse=false&filterId=-1&n=adder&maxLvl=0&minLvl=0&qual=0&start=20&total=59&pageSize=20&rhtml=true&cn=Chevron&r=Forscherliga&f=0&sk=0330fce3-9be0-4adf-b57b-78f09474b7f4 HTTP/1.1
-         */
-        // TODO:
-        /*
-        final Document searchResults = new Document();
-        searchResults.setRootElement(new Element("combined-search-results"));
-
-        int maxAuctionEntries = MAX_AUCTION_ENTRIES;
-        for(int start = 0 ; start < maxAuctionEntries ; start += AUCTION_PAGE_SIZE) {
-            Document partialResult = executeXmlQuery("auctionhouse/search/?"+
+    public AuctionSearch searchAuction(final String searchTerm, final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
+        AuctionSearch auctionSearch = executeRestQuery("auctionhouse/search/?"+
+                "sort=rarity&"+
+                "reverse=false"+
+                "&n="+ EncodingUtils.urlEncode(searchTerm, "UTF-8") +
+                "&qual="+ quality.numericValue +
+                "&cn=" + EncodingUtils.urlEncode(primaryCharname, "UTF-8") +
+                "&r=" + EncodingUtils.urlEncode(primaryRealm, "UTF-8") +
+                "&f=0"+
+                "&start=" + 0 +
+                "&pageSize=" + AUCTION_PAGE_SIZE).auctionSearch;
+        for(int start=AUCTION_PAGE_SIZE; start < auctionSearch.total ; start+= AUCTION_PAGE_SIZE) {
+            Page page = executeRestQuery("auctionhouse/search/?"+
                     "sort=rarity&"+
                     "reverse=false"+
                     "&n="+ EncodingUtils.urlEncode(searchTerm, "UTF-8") +
                     "&qual="+ quality.numericValue +
-                    "&cn=Chevron"+
-                    "&r=Forscherliga"+
+                    "&cn=" + EncodingUtils.urlEncode(primaryCharname, "UTF-8") +
+                    "&r=" + EncodingUtils.urlEncode(primaryRealm, "UTF-8") +
                     "&f=0"+
                     "&start=" + start +
                     "&pageSize=" + AUCTION_PAGE_SIZE);
-            maxAuctionEntries = Integer.parseInt(
-                    partialResult.getRootElement().getChild("auctionSearch").getAttribute("total").getValue());
-            searchResults.getRootElement().addContent(
-                    partialResult.getRootElement().getChild("auctionSearch").detach());
+            if(page.auctionSearch!=null) {
+                auctionSearch.auctionItems.addAll(page.auctionSearch.auctionItems);
+            } else {
+                LOG.error("Auction LookUp failed! ({}/{})", start, auctionSearch.total);
+            }
         }
-
-        return new AuctionSearch(searchResults);
-        */
+        if(exactMatch) {
+            final List<AuctionItem> markedForRemoval = new ArrayList<AuctionItem>();
+            for(AuctionItem item : auctionSearch.auctionItems) {
+                if(!item.name.equals(searchTerm)) {
+                    markedForRemoval.add(item);
+                }
+            }
+            auctionSearch.auctionItems.removeAll(markedForRemoval);
+        }
+        auctionSearch.end = auctionSearch.auctionItems.size();
+        return auctionSearch;
     }
 
 

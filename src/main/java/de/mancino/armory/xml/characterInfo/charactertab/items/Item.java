@@ -47,11 +47,11 @@ public class Item {
     @XmlAttribute
     public int durability;
     @XmlAttribute
-    public int gem0Id;
+    public long gem0Id;
     @XmlAttribute
-    public int gem1Id;
+    public long gem1Id;
     @XmlAttribute
-    public int gem2Id;
+    public long gem2Id;
     @XmlAttribute
     public String gemIcon0;
     @XmlAttribute
