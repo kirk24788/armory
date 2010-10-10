@@ -67,6 +67,8 @@ public class Armory {
 
     public Armory() {
         globalHttpClient = new DefaultHttpClient();
+        primaryCharname = "";
+        primaryRealm = "";
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new FormUrlEncodedProvider());
@@ -102,7 +104,7 @@ public class Armory {
         }
         final HttpPost postLogin = new HttpPost(armoryUrl);
 
-        List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+        final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
         nvps.add(new BasicNameValuePair("accountName", accountName));
         nvps.add(new BasicNameValuePair("password", password));
         nvps.add(new BasicNameValuePair("persistLogin", "on"));
@@ -112,11 +114,11 @@ public class Armory {
             final HttpResponse postResponse = httpClient.execute(postLogin);
             postResponse.getEntity().consumeContent();
             LOG.debug("Response: " + postResponse.getStatusLine());
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ArmoryConnectionException("Login failed!", e);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (final IndexOutOfBoundsException e) {
             throw new ArmoryConnectionException("Login failed! Missing Location Header!", e);
         }
         return httpClient;
@@ -130,12 +132,12 @@ public class Armory {
         httpMethod.addHeader("User-Agent", "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.8.1.10) Gecko/20071115 Firefox/2.0.0.10");
         httpMethod.addHeader("Pragma", "no-cache");
         try {
-            HttpResponse httpResponse = globalHttpClient.execute(httpMethod);
-            SAXBuilder parser = new SAXBuilder();
+            final HttpResponse httpResponse = globalHttpClient.execute(httpMethod);
+            final SAXBuilder parser = new SAXBuilder();
             final Document document = parser.build(httpResponse.getEntity().getContent());
             LOG.trace("Received XML Data:\n" + xmlToString(document));
             return document;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOG.error(e.getLocalizedMessage());
             LOG.debug("Stacktrace:", e);
             throw new ArmoryConnectionException( e);
@@ -169,13 +171,13 @@ public class Armory {
             summaryResponse.getEntity().consumeContent();
             final String cookieName = "auction_sk";
             LOG.debug("Searching for '{}' cookie", cookieName);
-            for(Cookie cookie : globalHttpClient.getCookieStore().getCookies()) {
+            for(final Cookie cookie : globalHttpClient.getCookieStore().getCookies()) {
                 LOG.trace(" {}: {}", cookie.getName(), cookie.getValue());
                 if(cookie.getName().equals(cookieName)) {
                     return cookie.getValue();
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new ArmoryConnectionException("Error getting auctionhause summary page", e);
         }
         return "";
@@ -196,19 +198,19 @@ public class Armory {
 
     }
 
-    protected void executeJsonPost(final String requestPath, BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+    protected void executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
         final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
         try {
             LOG.debug("Executing 'JSON' POST Method: " + jsonPostUrl);
             final HttpPost buyoutPost = new HttpPost(jsonPostUrl);
             if(parameters.length > 0) {
-                List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-                for(BasicNameValuePair parameter : parameters) {
+                final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+                for(final BasicNameValuePair parameter : parameters) {
                     nvps.add(parameter);
                 }
                 try {
                     buyoutPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-                } catch (UnsupportedEncodingException e) {
+                } catch (final UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -219,7 +221,7 @@ public class Armory {
             } else {
                 summaryResponse.getEntity().consumeContent();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new ArmoryConnectionException("Error sending JSON Request: " + jsonPostUrl, e);
         }
     }
@@ -238,7 +240,7 @@ public class Armory {
             }
             request.accept(MediaType.APPLICATION_XML);
             response = request.get(Page.class);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new ArmoryConnectionException("Error connection to Armory: " + requestUrl, e);
         }
         if(response.getResponseStatus() == Status.OK) {
@@ -267,7 +269,7 @@ public class Armory {
 
 
     public AuctionSearch searchAuction(final String searchTerm, final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
-        AuctionSearch auctionSearch = executeRestQuery("auctionhouse/search/?"+
+        final AuctionSearch auctionSearch = executeRestQuery("auctionhouse/search/?"+
                 "sort=rarity&"+
                 "reverse=false"+
                 "&n="+ EncodingUtils.urlEncode(searchTerm, "UTF-8") +
@@ -277,8 +279,13 @@ public class Armory {
                 "&f=0"+
                 "&start=" + 0 +
                 "&pageSize=" + AUCTION_PAGE_SIZE).auctionSearch;
+        if(auctionSearch==null) {
+            final AuctionSearch search = new AuctionSearch();
+            search.auctionItems = new ArrayList<AuctionItem>();
+            return search;
+        }
         for(int start=AUCTION_PAGE_SIZE; start < auctionSearch.total ; start+= AUCTION_PAGE_SIZE) {
-            Page page = executeRestQuery("auctionhouse/search/?"+
+            final Page page = executeRestQuery("auctionhouse/search/?"+
                     "sort=rarity&"+
                     "reverse=false"+
                     "&n="+ EncodingUtils.urlEncode(searchTerm, "UTF-8") +
@@ -296,7 +303,7 @@ public class Armory {
         }
         if(exactMatch) {
             final List<AuctionItem> markedForRemoval = new ArrayList<AuctionItem>();
-            for(AuctionItem item : auctionSearch.auctionItems) {
+            for(final AuctionItem item : auctionSearch.auctionItems) {
                 if(!item.name.equals(searchTerm)) {
                     markedForRemoval.add(item);
                 }
@@ -308,14 +315,14 @@ public class Armory {
     }
 
 
-    private static String xmlToString(Document document) {
-        XMLOutputter outputter = new XMLOutputter();
+    private static String xmlToString(final Document document) {
+        final XMLOutputter outputter = new XMLOutputter();
         try {
-            StringWriter sw = new StringWriter();
+            final StringWriter sw = new StringWriter();
             outputter.output(document, sw);
             return sw.toString();
         }
-        catch (IOException e) {
+        catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
