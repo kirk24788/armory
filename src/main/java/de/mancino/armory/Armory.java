@@ -116,6 +116,8 @@ public class Armory {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new ArmoryConnectionException("Login failed!", e);
+        } catch (IndexOutOfBoundsException e) {
+            throw new ArmoryConnectionException("Login failed! Missing Location Header!", e);
         }
         return httpClient;
     }
