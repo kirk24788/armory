@@ -35,22 +35,24 @@ public class ArmoryTest  extends Armory {
     public static void main(String[] args) {
         try {
             final ArmoryTest aTest = new ArmoryTest(login, passwd);
-      
+            aTest.listPrices("Haunted Memento");
+            if(true)return;
+
 //            aTest.listPrices("King's Amber");
 //            aTest.listPrices("Cardinal Ruby");
 //            aTest.listPrices("Ametrine");
 //            aTest.listPrices("Eye of Zul");
 //            aTest.listPrices("Dreadstone");
-   
+
             boolean reallyBuy = false;
-       
+
             aTest.buyAuctions("King's Amber", 910000, reallyBuy);
 //            aTest.buyAuctions("Cardinal Ruby", 990000, reallyBuy);
 //            aTest.buyAuctions("Ametrine", 870000, reallyBuy);
 //            aTest.buyAuctions("Dreadstone", 830000, reallyBuy);
 //            aTest.buyAuctions("Eye of Zul", 645000, reallyBuy);
 //            aTest.buyAuctions("Scarlet Ruby", 250000, reallyBuy);
-            
+
 
             aTest.buyAuctions("Titanium Powder", 250000, reallyBuy);
             aTest.buyAuctions("Titanium Ore", 50000, reallyBuy);
@@ -59,7 +61,7 @@ public class ArmoryTest  extends Armory {
             //aTest.listPrices("Damaged Necklace");
             aTest.listPrices("Titanium Powder");
             aTest.listPrices("Titanium Ore");
-     
+
             //aTest.listPrices("Titanium Powder");
             //aTest.listPrices("Titanium Ore");
             //aTest.listPrices("King's Amber");
@@ -96,7 +98,7 @@ public class ArmoryTest  extends Armory {
         long gold = (price/10000);
         return gold + "g" + silver + "s" + copper + "c";
     }
-    
+
     public void listPrices(final String name) throws ArmoryConnectionException {
         final StringBuffer sb = new StringBuffer();
         AuctionSearch search = searchAuction(name, Quality.COMMON, true);

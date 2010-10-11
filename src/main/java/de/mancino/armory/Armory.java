@@ -47,6 +47,7 @@ import de.mancino.armory.xml.characterInfo.CharacterInfo;
 import de.mancino.armory.xml.enums.Quality;
 import de.mancino.armory.xml.itemtooltips.ItemTooltip;
 import de.mancino.exceptions.ArmoryConnectionException;
+import de.mancino.exceptions.ArmoryRequestError;
 import de.mancino.utils.EncodingUtils;
 
 public class Armory {
@@ -60,15 +61,19 @@ public class Armory {
     private static final String REGION = "eu";
     private static final String ARMORY_BASE_URL = "http://" + REGION + ".wowarmory.com/";
     private static final String BATTLENET_BASE_URL = "https://" + REGION + ".battle.net/";
+    private final String accountName;
+    private final String password;
     private String primaryCharname;
     private String primaryRealm;
 
-    private final DefaultHttpClient globalHttpClient;
+    private DefaultHttpClient globalHttpClient;
 
     public Armory() {
         globalHttpClient = new DefaultHttpClient();
         primaryCharname = "";
         primaryRealm = "";
+        accountName = "";
+        password = "";
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new FormUrlEncodedProvider());
@@ -76,7 +81,7 @@ public class Armory {
 
     public Armory(final String accountName, final String password,
             final String primaryCharname, final String primaryRealm) throws ArmoryConnectionException {
-        globalHttpClient = login(accountName, password);
+        login(accountName, password);
         /*
         ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
         RegisterBuiltin.register(providerFactory);*/
@@ -91,13 +96,20 @@ public class Armory {
         selectPrimaryCharacter(primaryCharname, primaryRealm);
         this.primaryCharname = primaryCharname;
         this.primaryRealm = primaryRealm;
+        this.accountName = accountName;
+        this.password = password;
     }
 
-    private DefaultHttpClient login(final String accountName, final String password) throws ArmoryConnectionException {
-        final DefaultHttpClient httpClient = new DefaultHttpClient();
+    public void relog() throws ArmoryConnectionException {
+        login(accountName, password);
+        selectPrimaryCharacter(primaryCharname, primaryRealm);
+    }
+
+    private void login(final String accountName, final String password) throws ArmoryConnectionException {
+        globalHttpClient = new DefaultHttpClient();
         //httpClient. getParams().setCookiePolicy(CookiePolicy.RFC_2109);
         final String armoryUrl = BATTLENET_BASE_URL + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
-        httpClient.setRedirectHandler(new PostRedirectHandler());
+        globalHttpClient.setRedirectHandler(new PostRedirectHandler());
         if(LOG.isDebugEnabled()) {
             LOG.debug("Logging in to Armory ("+accountName +":" + password.charAt(0) + "***"
                     + password.charAt(password.length()-1) + "): " + armoryUrl);
@@ -111,7 +123,7 @@ public class Armory {
 
         try {
             postLogin.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-            final HttpResponse postResponse = httpClient.execute(postLogin);
+            final HttpResponse postResponse = globalHttpClient.execute(postLogin);
             postResponse.getEntity().consumeContent();
             LOG.debug("Response: " + postResponse.getStatusLine());
         } catch (final UnsupportedEncodingException e) {
@@ -121,7 +133,6 @@ public class Armory {
         } catch (final IndexOutOfBoundsException e) {
             throw new ArmoryConnectionException("Login failed! Missing Location Header!", e);
         }
-        return httpClient;
     }
 
     @Deprecated
@@ -199,6 +210,7 @@ public class Armory {
     }
 
     protected void executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+
         final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
         try {
             LOG.debug("Executing 'JSON' POST Method: " + jsonPostUrl);
@@ -243,11 +255,15 @@ public class Armory {
         } catch (final Exception e) {
             throw new ArmoryConnectionException("Error connection to Armory: " + requestUrl, e);
         }
-        if(response.getResponseStatus() == Status.OK) {
-            return response.getEntity();
+        final Status status = response.getResponseStatus();
+        if(status == Status.OK) {
+            Page page = response.getEntity();
+            if(page.error != null && page.error.error) {
+                    throw new ArmoryRequestError(page.error);
+            }
+            return page;
         } else {
-            throw new ArmoryConnectionException("Got '" + response.getResponseStatus()
-                    + "' Response from Armory: " + requestUrl);
+            throw new ArmoryConnectionException("Got '" + status + "' Response from Armory: " + requestUrl);
         }
     }
 

@@ -62,6 +62,7 @@ public class Page {
     public List<ItemTooltip> itemTooltips;
     @XmlElement(name = "auctionSearch")
     public AuctionSearch auctionSearch;
+    public ArmoryError error;
     // TODO: Waht if no search?!?
     //TODO:
 // <command classId="-1" cn="Chevron" end="40" f="0" filterId="-1" id="0" maxLvl="0" minLvl="0" n="King's Amber" pageSize="40" qual="4" r="Forscherliga" reverse="false" sort="RARITY" start="0"/>
