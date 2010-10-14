@@ -1,10 +1,3 @@
-/*
- * Armory.java 20.08.2010
- *
- * Copyright (c) 2010 1&1 Internet AG. All rights reserved.
- *
- * $Id$
- */
 package de.mancino.armory;
 
 import java.io.IOException;
@@ -16,7 +9,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -47,51 +39,112 @@ import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.exceptions.ArmoryRequestError;
 import de.mancino.utils.EncodingUtils;
 
+/**
+ * Class for controlling Blizzard's WoW-Armory Interface.
+ * The <code>Armory</code> class represents rougly Blizzards
+ * WoW Armory Web-Interface.
+ *
+ * The Armory can be used with oder without login, although it is
+ * recommended to always use a login.
+ * While the Armory will work without login, most functions won't
+ * work as expected / throw errors.
+ *
+ * @author mmancino
+ */
 public class Armory {
-    private static final int AUCTION_PAGE_SIZE = 40;
-
     /**
      * Logger instance of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Armory.class);
 
+    /**
+     * Page-Size for Auction Fetches. Higher Page-Sizes reduce request-counts and
+     * missed/duplicate auctions due to high activity, but Blizzard seems to have
+     * a page-size cap of 40 (?).
+     */
+    private static final int AUCTION_PAGE_SIZE = 40;
+
+    /**
+     * Region. This is mainly used for URL-Prefixes.
+     */
     private static final String REGION = "eu";
+
+    /**
+     * Base-URL for WoW Armory.
+     */
     private static final String ARMORY_BASE_URL = "http://" + REGION + ".wowarmory.com/";
+
+    /**
+     * Base-URL for BattleNet.
+     */
     private static final String BATTLENET_BASE_URL = "https://" + REGION + ".battle.net/";
+
+    /**
+     * Maximum number of retries for Armory requests.
+     */
     private static final int MAX_REQUEST_RETRIES = 3;
+
+    /**
+     * BattleNet Account Name.
+     */
     private final String accountName;
+
+    /**
+     * BattleNet Account Password.
+     */
     private final String password;
+
+    /**
+     * Character for Armory interaction.
+     */
     private String primaryCharname;
+
+    /**
+     * Character's Realm.
+     */
     private String primaryRealm;
 
-
-
+    /**
+     * HttpClient used for Armory Requests
+     */
     private DefaultHttpClient globalHttpClient;
 
+    /**
+     * Class for controlling Blizzard's WoW-Armory Interface.
+     * The <code>Armory</code> class represents rougly Blizzards
+     * WoW Armory Web-Interface.
+     *
+     * Please refrain from using this constructor, since you wont'
+     * be logged in to the armory.
+     * While the Armory will work without login, most functions won't
+     * work as expected / throw errors.
+     */
     public Armory() {
+        registerResteasyProviders();
         globalHttpClient = new DefaultHttpClient();
         primaryCharname = "";
         primaryRealm = "";
         accountName = "";
         password = "";
-        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
-        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());
-        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new FormUrlEncodedProvider());
     }
 
+
+    /**
+     * Class for controlling Blizzard's WoW-Armory Interface.
+     * The <code>Armory</code> class represents rougly Blizzards
+     * WoW Armory Web-Interface.
+     *
+     * @param accountName BattleNet Account Name
+     * @param password Password for the BattleNet Account
+     * @param primaryCharname Charname used for armory interaction
+     * @param primaryRealm Characters realm
+     *
+     * @throws ArmoryConnectionException Error logging in, this happen if
+     *         username/password or the charname/realm combination is wrong
+     */
     public Armory(final String accountName, final String password,
             final String primaryCharname, final String primaryRealm) throws ArmoryConnectionException {
-        /*
-        ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
-        RegisterBuiltin.register(providerFactory);*/
-
-        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
-        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());
-        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new FormUrlEncodedProvider());
-        /*
-         * org.jboss.resteasy.plugins.providers.
-        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
-        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());*/
+        registerResteasyProviders();
         this.primaryCharname = primaryCharname;
         this.primaryRealm = primaryRealm;
         this.accountName = accountName;
@@ -100,11 +153,33 @@ public class Armory {
         selectPrimaryCharacter(primaryCharname, primaryRealm);
     }
 
+    /**
+     * Register RestEasy Message Providers.
+     */
+    private static void registerResteasyProviders() {
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());
+        ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new FormUrlEncodedProvider());
+    }
+
+    /**
+     * Attempt to relog into BattleNet.
+     * This shouldn't be necessary any more, since a relog is automatically attempted.
+     * This method is deprecated and will be removed in future version.
+     *
+     * @throws ArmoryConnectionException Error while relogging.
+     */
+    @Deprecated
     public void relog() throws ArmoryConnectionException {
         login();
         selectPrimaryCharacter(primaryCharname, primaryRealm);
     }
 
+    /**
+     * Login to BattleNet
+     *
+     * @throws ArmoryConnectionException Error while logging in.
+     */
     private void login() throws ArmoryConnectionException {
         globalHttpClient = new DefaultHttpClient();
         //httpClient. getParams().setCookiePolicy(CookiePolicy.RFC_2109);
@@ -135,26 +210,84 @@ public class Armory {
         }
     }
 
+    /**
+     * Fetch Character-Sheet for a given Character.
+     *
+     * @param charName Character name.
+     * @param realmName Character's realm
+     *
+     * @return Character-Sheet
+     *
+     * @throws ArmoryConnectionException Error connecting to Armory
+     */
     public CharacterInfo getCharacterSheet(final String charName, final String realmName) throws ArmoryConnectionException {
         return executeRestQuery("character-sheet.xml?r=" + realmName + "&n=" + EncodingUtils.urlEncode(charName, "UTF-8")).characterInfo;
     }
 
+    /**
+     * Fetch Item Info for a given item-id.
+     *
+     * @param itemId Item-ID
+     *
+     * @return Item Tooltip information
+     *
+     * @throws ArmoryConnectionException Error connecting to Armory
+     */
     public ItemTooltip getItemInfo(final long itemId) throws ArmoryConnectionException {
         return executeRestQuery("item-tooltip.xml?i=" + itemId).itemTooltips.get(0);
     }
 
+    /**
+     * Search Armory for the given String.
+     *
+     * @param searchTerm Search-Term
+     *
+     * @return Armory Search Result
+     *
+     * @throws ArmoryConnectionException Error connecting to Armory
+     */
     public ArmorySearch searchArmory(final String searchTerm) throws ArmoryConnectionException {
         return searchArmory(searchTerm, "all");
     }
 
-    public void buyAuction(final AuctionItem item) throws ArmoryConnectionException {
-        LOG.info("Buying Auction {} ({})", item.auctionId, item.name);
+
+    /**
+     * Search Armory for the given String.
+     *
+     * @param searchTerm Search-Term
+     * @param searchType Search-Type
+     *
+     * @return Armory Search Result
+     *
+     * @throws ArmoryConnectionException Error connecting to Armory
+     */
+    public ArmorySearch searchArmory(final String searchTerm, final String searchType) throws ArmoryConnectionException {
+        return executeRestQuery("search.xml?searchQuery=" + EncodingUtils.urlEncode(searchTerm, "UTF-8")
+                + "&searchType=" + EncodingUtils.urlEncode(searchType, "UTF-8")).armorySearch;
+    }
+
+    /**
+     * Attempts to buyout the given Auction.
+     *
+     * @param auctionItem Auction Item
+     *
+     * @throws ArmoryConnectionException Error connecting to Armory
+     */
+    public void buyAuction(final AuctionItem auctionItem) throws ArmoryConnectionException {
+        LOG.info("Buying Auction {} ({})", auctionItem.auctionId, auctionItem.name);
         executeJsonPost("auctionhouse/bid.json",
-                new BasicNameValuePair("auc", String.valueOf(item.auctionId)),
-                new BasicNameValuePair("money", String.valueOf(item.buy)),
+                new BasicNameValuePair("auc", String.valueOf(auctionItem.auctionId)),
+                new BasicNameValuePair("money", String.valueOf(auctionItem.buy)),
                 new BasicNameValuePair("sk", getSkValue()));
     }
 
+    /**
+     * Returns the SK(Security-Key?) Cookie Value.
+     *
+     * @return SK(Security-Key?) Cookie Value
+     *
+     * @throws ArmoryConnectionException Error connecting to Armory
+     */
     protected String getSkValue() throws ArmoryConnectionException {
         try {
             final HttpGet summaryGet = new HttpGet(ARMORY_BASE_URL + "auctionhouse/index.xml#summary");
@@ -174,11 +307,14 @@ public class Armory {
         return "";
     }
 
-    public ArmorySearch searchArmory(final String searchTerm, final String searchType) throws ArmoryConnectionException {
-        return executeRestQuery("search.xml?searchQuery=" + EncodingUtils.urlEncode(searchTerm, "UTF-8")
-                + "&searchType=" + EncodingUtils.urlEncode(searchType, "UTF-8")).armorySearch;
-    }
-
+    /**
+     * Updates the primary Character for armory interaction.
+     *
+     * @param charName character name
+     * @param realm realm name
+     *
+     * @throws ArmoryConnectionException Error conenction to armory
+     */
     public void selectPrimaryCharacter(final String charName, final String realm) throws ArmoryConnectionException {
         LOG.info("Selecting Primary Char '{}' on realm '{}'", charName, realm);
         executeJsonPost("vault/character-select-submit.json",
@@ -186,9 +322,17 @@ public class Armory {
                 new BasicNameValuePair("r", realm));
         this.primaryCharname = charName;
         this.primaryRealm = realm;
-
     }
 
+    /**
+     * Executes JSON Requests to the armory. If errors occur
+     * it will be tried to relog and connect again up to {@link #MAX_REQUEST_RETRIES} times.
+     *
+     * @param requestPath Request-Path
+     * @param parameters Request-Parameters
+     *
+     * @throws ArmoryConnectionException Error conenction to armory
+     */
     protected void executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
         ArmoryConnectionException lastException = null;
         for(int currentTry=1; currentTry<=MAX_REQUEST_RETRIES ; currentTry++) {
@@ -208,6 +352,15 @@ public class Armory {
     }
 
 
+
+    /**
+     * Executes JSON Requests to the armory.
+     *
+     * @param requestPath Request-Path
+     * @param parameters Request-Parameters
+     *
+     * @throws ArmoryConnectionException Error conenction to armory
+     */
     private void _executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
 
         final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
@@ -237,7 +390,14 @@ public class Armory {
         }
     }
 
-
+    /**
+     * Executes XML Requests to the armory. If errors occur
+     * it will be tried to relog and connect again up to {@link #MAX_REQUEST_RETRIES} times.
+     *
+     * @param armoryRequest Armory Request
+     *
+     * @throws ArmoryConnectionException Error conenction to armory
+     */
     protected Page executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
         ArmoryConnectionException lastException = null;
         for(int currentTry=1; currentTry<=MAX_REQUEST_RETRIES ; currentTry++) {
@@ -255,6 +415,13 @@ public class Armory {
         throw lastException;
     }
 
+    /**
+     * Executes XML Requests to the armory.
+     *
+     * @param armoryRequest Armory Request
+     *
+     * @throws ArmoryConnectionException Error conenction to armory
+     */
     private Page _executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
         final String requestUrl = ARMORY_BASE_URL + armoryRequest + "&rhtml=n";
         LOG.debug("Executing GET Method: " + requestUrl);
@@ -276,7 +443,7 @@ public class Armory {
         if(status == Status.OK) {
             Page page = response.getEntity();
             if(page.error != null && page.error.error) {
-                    throw new ArmoryRequestError(page.error);
+                throw new ArmoryRequestError(page.error);
             }
             return page;
         } else {
@@ -284,24 +451,18 @@ public class Armory {
         }
     }
 
-    public void searchItem(final String name) throws ArmoryConnectionException {
-        // TODO:
-        /*
-        return new ItemSearch(executeXmlQuery("search.xml?searchQuery=" + EncodingUtils.urlEncode(name, "UTF-8")
-                + "&fl%5Bsource%5D=all"
-                + "&fl%5Btype%5D=all"
-                + "&fl%5BusbleBy%5D=all"
-                + "&fl%5BrqrMin%5D="
-                + "&fl%5BrqrMax%5D="
-                + "&fl%5Brrt%5D=all"
-                + "&advOptName=none"
-                + "&fl%5Bandor%5D=and"
-                + "&searchType=items"));
-         */
-        throw new NotImplementedException("searchItem: TODO?");
-    }
-
-
+    /**
+     * Searches the auction-house of the given primary character for items with given name and Quality.
+     * If requested the auctions will be filtered to only contain exact matches.
+     *
+     * @param searchTerm Search-Term
+     * @param quality Quality
+     * @param exactMatch true if result should only contain exact matches, false otherwise
+     *
+     * @return Auction Search Result
+     *
+     * @throws ArmoryConnectionException Error conenction to armory
+     */
     public AuctionSearch searchAuction(final String searchTerm, final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
         final AuctionSearch auctionSearch = executeRestQuery("auctionhouse/search/?"+
                 "sort=rarity&"+
