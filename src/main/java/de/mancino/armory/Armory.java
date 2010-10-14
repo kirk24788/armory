@@ -92,12 +92,12 @@ public class Armory {
          * org.jboss.resteasy.plugins.providers.
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new StringTextStar());
         ResteasyProviderFactory.getInstance().addBuiltInMessageBodyReader(new DataSourceProvider());*/
-        selectPrimaryCharacter(primaryCharname, primaryRealm);
         this.primaryCharname = primaryCharname;
         this.primaryRealm = primaryRealm;
         this.accountName = accountName;
         this.password = password;
         login();
+        selectPrimaryCharacter(primaryCharname, primaryRealm);
     }
 
     public void relog() throws ArmoryConnectionException {
