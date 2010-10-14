@@ -38,6 +38,7 @@ import de.mancino.armory.xml.itemtooltips.ItemTooltip;
 import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.exceptions.ArmoryRequestError;
 import de.mancino.utils.EncodingUtils;
+import de.mancino.utils.PostRedirectHandler;
 
 /**
  * Class for controlling Blizzard's WoW-Armory Interface.

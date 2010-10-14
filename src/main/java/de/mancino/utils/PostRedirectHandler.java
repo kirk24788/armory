@@ -1,11 +1,4 @@
-/*
- * PostRedirectHandler.java 20.09.2010
- *
- * Copyright (c) 2010 1&1 Internet AG. All rights reserved.
- *
- * $Id$
- */
-package de.mancino.armory;
+package de.mancino.utils;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -18,7 +11,16 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
 
+/**
+ * POST Redirect Handler which follows redirected POST-Requests even
+ * if the Redirect-Method is GET.
+ *
+ * @author mmancino
+ */
 public class PostRedirectHandler extends DefaultRedirectHandler {
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isRedirectRequested(
             final HttpResponse response,
