@@ -8,7 +8,6 @@
 package de.mancino.armory;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -33,9 +33,6 @@ import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.providers.StringTextStar;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,10 +58,13 @@ public class Armory {
     private static final String REGION = "eu";
     private static final String ARMORY_BASE_URL = "http://" + REGION + ".wowarmory.com/";
     private static final String BATTLENET_BASE_URL = "https://" + REGION + ".battle.net/";
+    private static final int MAX_REQUEST_RETRIES = 3;
     private final String accountName;
     private final String password;
     private String primaryCharname;
     private String primaryRealm;
+
+
 
     private DefaultHttpClient globalHttpClient;
 
@@ -81,7 +81,6 @@ public class Armory {
 
     public Armory(final String accountName, final String password,
             final String primaryCharname, final String primaryRealm) throws ArmoryConnectionException {
-        login(accountName, password);
         /*
         ResteasyProviderFactory providerFactory = ResteasyProviderFactory.getInstance();
         RegisterBuiltin.register(providerFactory);*/
@@ -98,14 +97,15 @@ public class Armory {
         this.primaryRealm = primaryRealm;
         this.accountName = accountName;
         this.password = password;
+        login();
     }
 
     public void relog() throws ArmoryConnectionException {
-        login(accountName, password);
+        login();
         selectPrimaryCharacter(primaryCharname, primaryRealm);
     }
 
-    private void login(final String accountName, final String password) throws ArmoryConnectionException {
+    private void login() throws ArmoryConnectionException {
         globalHttpClient = new DefaultHttpClient();
         //httpClient. getParams().setCookiePolicy(CookiePolicy.RFC_2109);
         final String armoryUrl = BATTLENET_BASE_URL + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
@@ -132,26 +132,6 @@ public class Armory {
             throw new ArmoryConnectionException("Login failed!", e);
         } catch (final IndexOutOfBoundsException e) {
             throw new ArmoryConnectionException("Login failed! Missing Location Header!", e);
-        }
-    }
-
-    @Deprecated
-    protected Document executeXmlQuery(final String armoryRequest) throws ArmoryConnectionException {
-        final String armoryUrl = ARMORY_BASE_URL + armoryRequest + "&rhtml=n";
-        LOG.debug("Executing GET Method: " + armoryUrl);
-        final HttpGet httpMethod = new HttpGet(armoryUrl);
-        httpMethod.addHeader("User-Agent", "User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.8.1.10) Gecko/20071115 Firefox/2.0.0.10");
-        httpMethod.addHeader("Pragma", "no-cache");
-        try {
-            final HttpResponse httpResponse = globalHttpClient.execute(httpMethod);
-            final SAXBuilder parser = new SAXBuilder();
-            final Document document = parser.build(httpResponse.getEntity().getContent());
-            LOG.trace("Received XML Data:\n" + xmlToString(document));
-            return document;
-        } catch (final Exception e) {
-            LOG.error(e.getLocalizedMessage());
-            LOG.debug("Stacktrace:", e);
-            throw new ArmoryConnectionException( e);
         }
     }
 
@@ -210,6 +190,25 @@ public class Armory {
     }
 
     protected void executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+        ArmoryConnectionException lastException = null;
+        for(int currentTry=1; currentTry<=MAX_REQUEST_RETRIES ; currentTry++) {
+            try {
+                _executeJsonPost(requestPath, parameters);
+                return;
+            } catch (ArmoryConnectionException queryException) {
+                lastException = queryException;
+                try {
+                    relog();
+                } catch (ArmoryConnectionException loginException) {
+                    lastException = loginException;
+                }
+            }
+        }
+        throw lastException;
+    }
+
+
+    private void _executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
 
         final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
         try {
@@ -238,7 +237,25 @@ public class Armory {
         }
     }
 
+
     protected Page executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
+        ArmoryConnectionException lastException = null;
+        for(int currentTry=1; currentTry<=MAX_REQUEST_RETRIES ; currentTry++) {
+            try {
+                return _executeRestQuery(armoryRequest);
+            } catch (ArmoryConnectionException queryException) {
+                lastException = queryException;
+                try {
+                    relog();
+                } catch (ArmoryConnectionException loginException) {
+                    lastException = loginException;
+                }
+            }
+        }
+        throw lastException;
+    }
+
+    private Page _executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
         final String requestUrl = ARMORY_BASE_URL + armoryRequest + "&rhtml=n";
         LOG.debug("Executing GET Method: " + requestUrl);
         final ClientRequest request = new ClientRequest(requestUrl, new ApacheHttpClient4Executor(globalHttpClient));
@@ -281,6 +298,7 @@ public class Armory {
                 + "&fl%5Bandor%5D=and"
                 + "&searchType=items"));
          */
+        throw new NotImplementedException("searchItem: TODO?");
     }
 
 
@@ -329,19 +347,4 @@ public class Armory {
         auctionSearch.end = auctionSearch.auctionItems.size();
         return auctionSearch;
     }
-
-
-    private static String xmlToString(final Document document) {
-        final XMLOutputter outputter = new XMLOutputter();
-        try {
-            final StringWriter sw = new StringWriter();
-            outputter.output(document, sw);
-            return sw.toString();
-        }
-        catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
 }
