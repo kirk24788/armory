@@ -18,3 +18,5 @@ log
 
 syntax: regexp
 ^src/main/java/Test\.java$
+syntax: regexp
+^src/main/java/de/mancino/armory/ArmoryTest\.java$
