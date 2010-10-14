@@ -22,25 +22,27 @@ import de.mancino.armory.xml.tabinfo.TabInfo;
 
 /**
  *
- * Example Snippet:
- *  <page globalSearch="1"
- *   lang="en_us"
- *   requestQuery="searchQuery=H%C3%A9lios&amp;searchType=all&amp;rhtml=n"
- *   requestUrl="/search.xml">
- *    <!-- Armory Search -->
- *    <armorySearch />
+ * Example Snippet:<br/>
+ *  <code>
+ *  &lt;page globalSearch="1"<br/>
+ *  &nbsp;lang="en_us"<br/>
+ *  &nbsp;requestQuery="searchQuery=H%C3%A9lios&amp;searchType=all&amp;rhtml=n"<br/>
+ *  &nbsp;requestUrl="/search.xml"&gt;<br/>
+ *  &nbsp;&nbsp;&lt;!-- Armory Search --&gt;<br/>
+ *  &nbsp;&nbsp;&lt;armorySearch /&gt;<br/>
  *
- *    <!-- Character Info -->
- *    <tabInfo />
- *    <characterInfo />
+ *  &nbsp;&nbsp;&lt;!-- Character Info --&gt;<br/>
+ *  &nbsp;&nbsp;&lt;tabInfo /&gt;<br/>
+ *  &nbsp;&nbsp;&lt;characterInfo /&gt;<br/>
  *
- *    <!-- Item Info -->
- *    <itemTooltips>
- *      <itemTooltip />
- *      ...
- *      <itemTooltip />
- *    </itemTooltips>
- *  </page>
+ *  &nbsp;&nbsp;&lt;!-- Item Info --&gt;<br/>
+ *  &nbsp;&nbsp;&lt;itemTooltips&gt;<br/>
+ *  &nbsp;&nbsp;&nbsp;&lt;itemTooltip /&gt;<br/>
+ *  &nbsp;&nbsp;&nbsp;...<br/>
+ *  &nbsp;&nbsp;&nbsp;&lt;itemTooltip /&gt;<br/>
+ *  &nbsp;&nbsp;&lt;/itemTooltips&gt;<br/>
+ *  &lt;/page&gt;<br/>
+ *  </code>
  * @author mmancino
  */
 @XmlRootElement(name = "page")
