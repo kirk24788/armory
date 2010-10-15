@@ -7,18 +7,12 @@
     </properties>
     <body>
         <release
-            version="2-SNAPSHOT"
+            version="1-SNAPSHOT"
             date="__NEXT__"
             description="">
             <action
                 dev="mmancino"
-                type="new">QSIKA-567: Überprüfung des Alters der PortalPom Version</action>
-            <action
-                dev="mmancino"
-                type="new">Deployment des WARs über GSC</action>
-            <action
-                dev="mmancino"
-                type="new">Konfiguration über Spring</action>
+                type="new">???</action>
         </release>
         <release version="1.0.4" date="2010-10-15" description="bugfix release">
             <action
