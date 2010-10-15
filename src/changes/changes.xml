@@ -3,7 +3,7 @@
     <properties>
         <title>Changes</title>
         <author
-            email="mifr@united.domain">Mirko Friedenhagen</author>
+            email="mario@mancino-net.de">Mario Mancino</author>
     </properties>
     <body>
         <release
@@ -20,40 +20,46 @@
                 dev="mmancino"
                 type="new">Konfiguration über Spring</action>
         </release>
-        <release version="1.0" date="2009-11-27" description="Initiales Release">
+        <release version="1.0.4" date="2010-10-15" description="bugfix release">
             <action
                 dev="mmancino"
-                type="new">Bugzilla Checker implementiert</action>
+                type="fix">Auto-Relogin feature fixed</action>
+        </release>
+        <release version="1.0.3" date="2010-10-14" description="auto-relogin support">
             <action
                 dev="mmancino"
-                type="new">Paket Checker implementiert</action>
+                type="new">Auto-Relogin on query errors</action>
+        </release>
+        <release version="1.0.2" date="2010-10-11" description="auction support">
             <action
                 dev="mmancino"
-                type="new">SVN Checker implementiert</action>
+                type="add">blizzard error code can now be evaluated</action>
             <action
                 dev="mmancino"
-                type="new">Wiki Checker implementiert</action>
+                type="fix">User Login fixed</action>
             <action
                 dev="mmancino"
-                type="new">Paket-Support für Debian-Pakete</action>
+                type="new">Auction support: searching and buyout</action>
+        </release>
+        <release version="1.0.1" date="2010-10-07">
             <action
                 dev="mmancino"
-                type="new">Paket-Support für Jar's/War's</action>
+                type="new">user login implemented</action>
+        </release>
+        <release version="1.0.0" date="2010-09-20" description="re-release as library">
             <action
                 dev="mmancino"
-                type="new">Paket-Support für RPM's</action>
+                type="new">simple armory query api using reasteasy from the scratch</action>
+        </release>
+        <release version="0.2.0" date="2010-08-21" description="plotting support">
             <action
                 dev="mmancino"
-                type="new">Paket-Support für Shell-Skripte</action>
-            <action
-                dev="mifr"
-                type="new">SVN Support</action>
-            <action
-                dev="mifr"
-                type="new">TWiki Support</action>
+                type="new">plotting support using gnuplot</action>
+        </release>
+        <release version="0.1.0" date="2010-03-15" description="initial release as webapp">
             <action
                 dev="mmancino"
-                type="new">QaArtifactCheck als Web-Server</action>
+                type="new">query support</action>
         </release>
     </body>
 

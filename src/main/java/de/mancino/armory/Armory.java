@@ -39,6 +39,7 @@ import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.exceptions.ArmoryRequestError;
 import de.mancino.utils.EncodingUtils;
 import de.mancino.utils.PostRedirectHandler;
+import de.mancino.utils.RetryableRequest;
 
 /**
  * Class for controlling Blizzard's WoW-Armory Interface.
@@ -331,25 +332,25 @@ public class Armory {
      *
      * @param requestPath Request-Path
      * @param parameters Request-Parameters
-     *
-     * @throws ArmoryConnectionException Error conenction to armory
+     * @throws ArmoryConnectionException
      */
     protected void executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
-        ArmoryConnectionException lastException = null;
-        for(int currentTry=1; currentTry<=MAX_REQUEST_RETRIES ; currentTry++) {
-            try {
-                _executeJsonPost(requestPath, parameters);
-                return;
-            } catch (ArmoryConnectionException queryException) {
-                lastException = queryException;
-                try {
-                    relog();
-                } catch (ArmoryConnectionException loginException) {
-                    lastException = loginException;
+        try {
+            new RetryableRequest<Void>() {
+                @Override
+                protected Void request() throws Throwable {
+                    _executeJsonPost(requestPath, parameters);
+                    return null;
                 }
-            }
+
+                @Override
+                protected void errorCleanup() throws Throwable {
+                    relog();
+                }
+            }.requestWithRetries();
+        } catch (Throwable t) {
+            throw new ArmoryConnectionException(t);
         }
-        throw lastException;
     }
 
 
@@ -363,7 +364,6 @@ public class Armory {
      * @throws ArmoryConnectionException Error conenction to armory
      */
     private void _executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
-
         final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
         try {
             LOG.debug("Executing 'JSON' POST Method: " + jsonPostUrl);
@@ -400,20 +400,21 @@ public class Armory {
      * @throws ArmoryConnectionException Error conenction to armory
      */
     protected Page executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
-        ArmoryConnectionException lastException = null;
-        for(int currentTry=1; currentTry<=MAX_REQUEST_RETRIES ; currentTry++) {
-            try {
-                return _executeRestQuery(armoryRequest);
-            } catch (ArmoryConnectionException queryException) {
-                lastException = queryException;
-                try {
-                    relog();
-                } catch (ArmoryConnectionException loginException) {
-                    lastException = loginException;
+        try {
+            return new RetryableRequest<Page>() {
+                @Override
+                protected Page request() throws Throwable {
+                    return _executeRestQuery(armoryRequest);
                 }
-            }
+
+                @Override
+                protected void errorCleanup() throws Throwable {
+                    relog();
+                }
+            }.requestWithRetries();
+        } catch (Throwable t) {
+            throw new ArmoryConnectionException(t);
         }
-        throw lastException;
     }
 
     /**

@@ -16,7 +16,7 @@ public class ArmoryConnectionException extends Exception {
      *
      * @param e cause
      */
-    public ArmoryConnectionException(Exception e) {
+    public ArmoryConnectionException(Throwable e) {
         super(e);
     }
 
@@ -26,7 +26,7 @@ public class ArmoryConnectionException extends Exception {
      * @param msg message
      * @param e cause
      */
-    public ArmoryConnectionException(String msg, Exception e) {
+    public ArmoryConnectionException(String msg, Throwable e) {
         super(msg, e);
     }
 
