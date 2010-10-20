@@ -5,12 +5,12 @@
     <parent>
         <groupId>de.mancino</groupId>
         <artifactId>superpom</artifactId>
-        <version>1.0.0</version>
+        <version>2.0.0</version>
     </parent>
     <groupId>de.mancino.armory</groupId>
     <artifactId>armory</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <name>armory</name>
     <url>http://www.mancino-net.de</url>
     <description>
@@ -25,21 +25,15 @@
             <timezone>1</timezone>
         </developer>
     </developers>
-    <properties>
-        <!--<resteasy.version>1.2.GA</resteasy.version> -->
-        <resteasy.version>2.0-beta-1</resteasy.version> <!-- Nutzt nicht mehr dne alten HTTP Client -->
-    </properties>
     <dependencies>
         <!-- Rest Easy -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>jaxrs-api</artifactId>
-            <version>${resteasy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.sun.xml.bind</groupId>
@@ -54,7 +48,6 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>${resteasy.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -73,71 +66,58 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-spring</artifactId>
-            <version>${resteasy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
-            <version>${resteasy.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
-            <version>1.1</version>
         </dependency>
         <!-- Logging -->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.14</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.6</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.6</version>
         </dependency>
         <!-- Commons Pakete -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.0.1</version>
         </dependency>
         <!-- Tests -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-            <version>4.8.1</version>
         </dependency>
     </dependencies>
 </project>
