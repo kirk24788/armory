@@ -5,6 +5,7 @@
     <parent>
         <groupId>de.mancino</groupId>
         <artifactId>superpom</artifactId>
+        <version>1.0.0</version>
     </parent>
     <groupId>de.mancino.armory</groupId>
     <artifactId>armory</artifactId>
