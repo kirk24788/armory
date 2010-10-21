@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
  * times. If an exception occurs the {@link #errorCleanup()} method is
  * called - default implementation is empty, override if necessary.
  *
+ * @param T Request response type
+ *
  * @author mmancino
  */
 public abstract class RetryableRequest<T> {
@@ -40,6 +42,8 @@ public abstract class RetryableRequest<T> {
      * Executes the given request in {@link #request()} up to given number of
      * times. If an exception occurs the {@link #errorCleanup()} method is
      * called - default implementation is empty, override if necessary.
+     *
+     * @param maxRetries maximum number of retries per request
      */
     public RetryableRequest(final int maxRetries) {
         this.maxRetries = maxRetries;
@@ -50,6 +54,7 @@ public abstract class RetryableRequest<T> {
      * Start the requests and retry on errors.
      *
      * @return Request-Result
+     *
      * @throws Throwable After the given number of retries the error persisted.
      */
     public T requestWithRetries() throws Throwable {
@@ -77,12 +82,16 @@ public abstract class RetryableRequest<T> {
      * The actual request.
      *
      * @return Request-Result
+     *
+     * @throws Throwable Error while executing request.
      */
     protected abstract T request() throws Throwable;
 
     /**
      * Error-Cleanup, which is called if an exception occurs during the request.
      * Default implementation is empty, override if necessary.
+     *
+     * @throws Throwable Error while cleaning up erroneous request.
      */
     protected void errorCleanup() throws Throwable {
     }

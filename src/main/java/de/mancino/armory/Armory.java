@@ -82,11 +82,6 @@ public class Armory {
     private static final String BATTLENET_BASE_URL = "https://" + REGION + ".battle.net/";
 
     /**
-     * Maximum number of retries for Armory requests.
-     */
-    private static final int MAX_REQUEST_RETRIES = 3;
-
-    /**
      * BattleNet Account Name.
      */
     private final String accountName;
@@ -185,7 +180,8 @@ public class Armory {
     private void login() throws ArmoryConnectionException {
         globalHttpClient = new DefaultHttpClient();
         //httpClient. getParams().setCookiePolicy(CookiePolicy.RFC_2109);
-        final String armoryUrl = BATTLENET_BASE_URL + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
+        final String armoryUrl = BATTLENET_BASE_URL
+            + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
         globalHttpClient.setRedirectHandler(new PostRedirectHandler());
         if(LOG.isDebugEnabled()) {
             LOG.debug("Logging in to Armory ("+accountName +":" + password.charAt(0) + "***"
@@ -223,7 +219,8 @@ public class Armory {
      * @throws ArmoryConnectionException Error connecting to Armory
      */
     public CharacterInfo getCharacterSheet(final String charName, final String realmName) throws ArmoryConnectionException {
-        return executeRestQuery("character-sheet.xml?r=" + realmName + "&n=" + EncodingUtils.urlEncode(charName, "UTF-8")).characterInfo;
+        return executeRestQuery("character-sheet.xml?r=" + realmName
+                + "&n=" + EncodingUtils.urlEncode(charName, "UTF-8")).characterInfo;
     }
 
     /**
@@ -332,14 +329,15 @@ public class Armory {
      *
      * @param requestPath Request-Path
      * @param parameters Request-Parameters
-     * @throws ArmoryConnectionException
+     * @throws ArmoryConnectionException Error while connecting to armory
      */
-    protected void executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+    protected void executeJsonPost(final String requestPath,
+                   final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
         try {
             new RetryableRequest<Void>() {
                 @Override
                 protected Void request() throws Throwable {
-                    _executeJsonPost(requestPath, parameters);
+                    internalExecuteJsonPost(requestPath, parameters);
                     return null;
                 }
 
@@ -361,9 +359,10 @@ public class Armory {
      * @param requestPath Request-Path
      * @param parameters Request-Parameters
      *
-     * @throws ArmoryConnectionException Error conenction to armory
+     * @throws ArmoryConnectionException Error connencting to armory
      */
-    private void _executeJsonPost(final String requestPath, final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+    private void internalExecuteJsonPost(final String requestPath,
+                 final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
         final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
         try {
             LOG.debug("Executing 'JSON' POST Method: " + jsonPostUrl);
@@ -397,6 +396,8 @@ public class Armory {
      *
      * @param armoryRequest Armory Request
      *
+     * @return Reponse XML Page
+     *
      * @throws ArmoryConnectionException Error conenction to armory
      */
     protected Page executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
@@ -404,7 +405,7 @@ public class Armory {
             return new RetryableRequest<Page>() {
                 @Override
                 protected Page request() throws Throwable {
-                    return _executeRestQuery(armoryRequest);
+                    return internalExecuteRestQuery(armoryRequest);
                 }
 
                 @Override
@@ -422,9 +423,11 @@ public class Armory {
      *
      * @param armoryRequest Armory Request
      *
+     * @return Reponse XML Page
+     *
      * @throws ArmoryConnectionException Error conenction to armory
      */
-    private Page _executeRestQuery(final String armoryRequest) throws ArmoryConnectionException {
+    private Page internalExecuteRestQuery(final String armoryRequest) throws ArmoryConnectionException {
         final String requestUrl = ARMORY_BASE_URL + armoryRequest + "&rhtml=n";
         LOG.debug("Executing GET Method: " + requestUrl);
         final ClientRequest request = new ClientRequest(requestUrl, new ApacheHttpClient4Executor(globalHttpClient));
@@ -465,7 +468,8 @@ public class Armory {
      *
      * @throws ArmoryConnectionException Error conenction to armory
      */
-    public AuctionSearch searchAuction(final String searchTerm, final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
+    public AuctionSearch searchAuction(final String searchTerm,
+                         final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
         final AuctionSearch auctionSearch = executeRestQuery("auctionhouse/search/?"+
                 "sort=rarity&"+
                 "reverse=false"+

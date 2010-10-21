@@ -12,7 +12,7 @@
             description="">
             <action
                 dev="mmancino"
-                type="new">???</action>
+                type="fix">Checkstyle und FindBugs Fehler ausgemerzt</action>
         </release>
         <release version="1.0.5" date="2010-10-20" description="minor release">
             <action
