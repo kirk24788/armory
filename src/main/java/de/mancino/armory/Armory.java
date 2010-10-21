@@ -300,7 +300,7 @@ public class Armory {
                     return cookie.getValue();
                 }
             }
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             throw new ArmoryConnectionException("Error getting auctionhause summary page", e);
         }
         return "";
@@ -385,7 +385,11 @@ public class Armory {
             } else {
                 summaryResponse.getEntity().consumeContent();
             }
-        } catch (final Exception e) {
+        } catch (final IllegalStateException e) {
+            final String msg = "IllegalStateException in JSON Request, this should NEVER happen";
+            LOG.error(msg);
+            throw new RuntimeException(msg, e);
+        } catch (final IOException e) {
             throw new ArmoryConnectionException("Error sending JSON Request: " + jsonPostUrl, e);
         }
     }
