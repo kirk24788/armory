@@ -22,7 +22,11 @@ import javax.xml.bind.annotation.XmlRootElement;
          ranking="0"
          rating="0"
          realm="Forscherliga"
-         realmUrl="b=Embuscade+%2F+Hinterhalt&amp;r=Forscherliga&amp;ts=2&amp;t=Smarter+than+you&amp;ff=realm&amp;fv=Forscherliga&amp;select=Smarter+than+you" season="0" seasonGamesPlayed="0" seasonGamesWon="0" size="2" teamSize="2" teamUrl="r=Forscherliga&amp;ts=2&amp;t=Smarter+than+you&amp;select=Smarter+than+you" url="r=Forscherliga&amp;ts=2&amp;t=Smarter+than+you&amp;select=Smarter+than+you">
+         realmUrl="b=Embuscade+%2F+Hinterhalt&amp;r=Forscherliga&amp;ts=2&amp;t=Smarter+than+you&amp;
+                   ff=realm&amp;fv=Forscherliga&amp;select=Smarter+than+you" 
+         season="0" seasonGamesPlayed="0" seasonGamesWon="0" size="2" teamSize="2" 
+         teamUrl="r=Forscherliga&amp;ts=2&amp;t=Smarter+than+you&amp;select=Smarter+than+you" 
+         url="r=Forscherliga&amp;ts=2&amp;t=Smarter+than+you&amp;select=Smarter+than+you">
           <emblem />
           <members>
             <character />
