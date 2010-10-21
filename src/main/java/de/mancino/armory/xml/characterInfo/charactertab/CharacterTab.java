@@ -124,6 +124,14 @@ TODO:
     @XmlElementWrapper(name="items")
     public List<Item> items;
 
+    /**
+     * Returns the item in the given slot, if there is one. If not
+     * null is returned.
+     * 
+     * @param slot slot to look for
+     * 
+     * @return item in slot or null if no item is in given slot
+     */
     public Item getItemInSlot(final Slot slot) {
         for(Item item : items) {
             if(item.slot.equals(slot)) {

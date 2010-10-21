@@ -4,6 +4,11 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 
+/**
+ * Item Slot. E.g. head, neck...
+ * 
+ * @author mmancino
+ */
 @XmlEnum
 public enum Slot {
     @XmlEnumValue(value="0")
@@ -45,23 +50,48 @@ public enum Slot {
     @XmlEnumValue(value="18")
     TABARD(18, "Tabard");
 
+    /**
+     * numeric item slot id
+     */
     public final int numericValue;
+
+    /**
+     * item slot description / real name
+     */
     public final String description;
 
+    /**
+     * Item Slot.
+     * 
+     * @param numericValue numeric item slot id
+     * @param description item slot description / real name
+     */
     Slot(final int numericValue, final String description) {
         this.numericValue = numericValue;
         this.description = description;
     }
 
-    public static Slot parse(int slot) {
+    /**
+     * Returns the {@link Slot} for a given item slot id.
+     * If the id doesn't exist, a {@link RuntimeException} is thrown,
+     * thus be cautious!
+     * 
+     * @param id item slot id
+     * 
+     * @return item slot, whcih matches the given id
+     */
+    public static Slot parse(final int id) {
         for(Slot possibleQuality : Slot.values()) {
-            if(possibleQuality.numericValue == slot) {
+            if(possibleQuality.numericValue == id) {
                 return possibleQuality;
             }
         }
-        throw new RuntimeException("Error parsing slot: " + slot);
+        throw new RuntimeException("Error parsing slot: " + id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return description;

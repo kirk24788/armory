@@ -4,6 +4,11 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 
+/**
+ * Item Quality. E.g. poor, common...
+ * 
+ * @author mmancino
+ */
 @XmlEnum
 public enum Quality {
     @XmlEnumValue(value="0")
@@ -23,16 +28,37 @@ public enum Quality {
     @XmlEnumValue(value="7")
     HEIRLOOM(7, "Heirloom", "Light gold"); // Light gold
 
+    /**
+     * Numeric quality id.
+     */
     public final int numericValue;
+    
+    /**
+     * Description / quality name.
+     */
     public final String description;
+    
+    /**
+     * Quality color.
+     */
     public final String color;
 
+    /**
+     * Item Quality. E.g. poor, common...
+     * 
+     * @param numericValue numeric quality id
+     * @param description description / quality name
+     * @param color quality color
+     */
     Quality(final int numericValue, final String description, final String color) {
         this.numericValue = numericValue;
         this.description = description;
         this.color = color;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return description + " (" + color + ")";
