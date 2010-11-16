@@ -13,6 +13,12 @@
             <action
                 dev="mmancino"
                 type="fix">Checkstyle und FindBugs Fehler ausgemerzt</action>
+            <action
+                dev="mmancino"
+                type="fix">Http Conections jetzt thread safe</action>
+            <action
+                dev="mmancino"
+                type="new">Neues Item Tooltip Attribut 'Gem Properties'</action>
         </release>
         <release version="1.0.5" date="2010-10-20" description="minor release">
             <action
