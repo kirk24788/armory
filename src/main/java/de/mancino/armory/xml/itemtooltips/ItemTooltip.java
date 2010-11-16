@@ -91,6 +91,7 @@ public class ItemTooltip {
     public int itemLevel;
     public SetData setData;
     public StringValueAttribute itemSource;
+    public String gemProperties;
 }
 
 
