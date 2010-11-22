@@ -25,6 +25,9 @@ import org.jboss.resteasy.plugins.providers.DataSourceProvider;
 import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
 import org.jboss.resteasy.plugins.providers.StringTextStar;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -380,11 +383,23 @@ public class Armory {
             }
             buyoutPost.setHeader("Accept", "application/json, text/javascript, */*");
             final HttpResponse summaryResponse = globalHttpClient.execute(buyoutPost);
+            final String jsonResponse = IOUtils.toString(summaryResponse.getEntity().getContent());
             if(LOG.isTraceEnabled()) {
-                LOG.trace(IOUtils.toString(summaryResponse.getEntity().getContent()));
-            } else {
-                summaryResponse.getEntity().consumeContent();
+                LOG.trace(jsonResponse);
             }
+            try {
+                final JSONObject json = (JSONObject) new JSONParser().parse(jsonResponse);
+                if(json.containsKey("error")) {
+                    final JSONObject error = (JSONObject) json.get("error");
+                    if (error.containsKey("message")) {
+                        final String errorMsg = (String) error.get("message");
+                        throw new ArmoryConnectionException(errorMsg);
+                    }
+                }
+            } catch (ParseException e) {
+                throw new ArmoryConnectionException("Couldn't parse Response JSON: " + jsonResponse, e);
+            }
+            
         } catch (final IllegalStateException e) {
             final String msg = "IllegalStateException in JSON Request, this should NEVER happen";
             LOG.error(msg);
