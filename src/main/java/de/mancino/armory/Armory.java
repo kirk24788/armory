@@ -10,13 +10,23 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientResponse;
@@ -121,13 +131,31 @@ public class Armory {
      */
     public Armory() {
         registerResteasyProviders();
-        globalHttpClient = new DefaultHttpClient();
+        globalHttpClient = createHttpClient();
         primaryCharname = "";
         primaryRealm = "";
         accountName = "";
         password = "";
     }
 
+    private DefaultHttpClient createHttpClient() {
+        // Create and initialize HTTP parameters
+        HttpParams params = new BasicHttpParams();
+        ConnManagerParams.setMaxTotalConnections(params, 100);
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+
+        // Create and initialize scheme registry·
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        schemeRegistry.register(new Scheme("https", PlainSocketFactory.getSocketFactory(), 433));
+
+        // Create an HttpClient with the ThreadSafeClientConnManager.
+        // This connection manager must be used if more than one thread will
+        // be using the HttpClient.
+        ClientConnectionManager cm = new ThreadSafeClientConnManager(params, schemeRegistry);
+        return new DefaultHttpClient(cm, params);
+
+    }
 
     /**
      * Class for controlling Blizzard's WoW-Armory Interface.
