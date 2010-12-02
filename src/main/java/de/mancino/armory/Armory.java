@@ -306,6 +306,7 @@ public class Armory {
     public void buyAuction(final AuctionItem auctionItem) throws ArmoryConnectionException {
         LOG.info("Buying Auction {} ({})", auctionItem.auctionId, auctionItem.name);
         executeJsonPost("auctionhouse/bid.json",
+                true,
                 new BasicNameValuePair("auc", String.valueOf(auctionItem.auctionId)),
                 new BasicNameValuePair("money", String.valueOf(auctionItem.buy)),
                 new BasicNameValuePair("sk", getSkValue()));
@@ -348,6 +349,7 @@ public class Armory {
     public void selectPrimaryCharacter(final String charName, final String realm) throws ArmoryConnectionException {
         LOG.info("Selecting Primary Char '{}' on realm '{}'", charName, realm);
         executeJsonPost("vault/character-select-submit.json",
+                false,
                 new BasicNameValuePair("cn", charName),
                 new BasicNameValuePair("r", realm));
         this.primaryCharname = charName;
@@ -362,7 +364,7 @@ public class Armory {
      * @param parameters Request-Parameters
      * @throws ArmoryConnectionException Error while connecting to armory
      */
-    protected void executeJsonPost(final String requestPath,
+    protected void executeJsonPost(final String requestPath, final boolean relogOnError,
                    final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
         try {
             new RetryableRequest<Void>() {
@@ -374,7 +376,9 @@ public class Armory {
 
                 @Override
                 protected void errorCleanup() throws Throwable {
-                    relog();
+                    if(relogOnError) {
+                        relog();
+                    }
                 }
             }.requestWithRetries();
         } catch (Throwable t) {
@@ -427,7 +431,7 @@ public class Armory {
             } catch (ParseException e) {
                 throw new ArmoryConnectionException("Couldn't parse Response JSON: " + jsonResponse, e);
             }
-            
+
         } catch (final IllegalStateException e) {
             final String msg = "IllegalStateException in JSON Request, this should NEVER happen";
             LOG.error(msg);
