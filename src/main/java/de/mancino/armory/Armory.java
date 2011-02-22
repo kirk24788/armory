@@ -521,9 +521,32 @@ public class Armory {
      */
     public AuctionSearch searchAuction(final String searchTerm,
                          final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
+        return searchAuction(searchTerm, -1, -1, quality, exactMatch);
+    }
+    
+
+    /**
+     * Searches the auction-house of the given primary character for items with given name and Quality.
+     * If requested the auctions will be filtered to only contain exact matches.
+     *
+     * @param searchTerm Search-Term
+     * @param minLevel Minimum Level, -1 if none
+     * @param maxLevel Maximum Level, -1 if none
+     * @param quality Quality
+     * @param exactMatch true if result should only contain exact matches, false otherwise
+     *
+     * @return Auction Search Result
+     *
+     * @throws ArmoryConnectionException Error conenction to armory
+     */
+    public AuctionSearch searchAuction(final String searchTerm,
+                         final int minLevel, final int maxLevel,
+                         final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
         final AuctionSearch auctionSearch = executeRestQuery("auctionhouse/search/?"+
-                "sort=rarity&"+
-                "reverse=false"+
+                "sort=rarity"+
+                "&reverse=false"+
+                "&minLvl=" + minLevel +
+                "&maxLvl=" + maxLevel +
                 "&n="+ EncodingUtils.urlEncode(searchTerm, "UTF-8") +
                 "&qual="+ quality.numericValue +
                 "&cn=" + EncodingUtils.urlEncode(primaryCharname, "UTF-8") +
@@ -539,7 +562,9 @@ public class Armory {
         for(int start=AUCTION_PAGE_SIZE; start < auctionSearch.total ; start+= AUCTION_PAGE_SIZE) {
             final Page page = executeRestQuery("auctionhouse/search/?"+
                     "sort=rarity&"+
-                    "reverse=false"+
+                    "&reverse=false"+
+                    "&minLvl=" + minLevel +
+                    "&maxLvl=" + maxLevel +
                     "&n="+ EncodingUtils.urlEncode(searchTerm, "UTF-8") +
                     "&qual="+ quality.numericValue +
                     "&cn=" + EncodingUtils.urlEncode(primaryCharname, "UTF-8") +
