@@ -271,29 +271,16 @@ public class Armory {
      * Search Armory for the given String.
      *
      * @param searchTerm Search-Term
-     *
-     * @return Armory Search Result
-     *
-     * @throws ArmoryConnectionException Error connecting to Armory
-     */
-    public ArmorySearch searchArmory(final String searchTerm) throws ArmoryConnectionException {
-        return searchArmory(searchTerm, "all");
-    }
-
-
-    /**
-     * Search Armory for the given String.
-     *
-     * @param searchTerm Search-Term
      * @param searchType Search-Type
      *
      * @return Armory Search Result
      *
      * @throws ArmoryConnectionException Error connecting to Armory
      */
-    public ArmorySearch searchArmory(final String searchTerm, final String searchType) throws ArmoryConnectionException {
+    public ArmorySearch searchArmory(final String searchTerm, final SelectedTab searchType) throws ArmoryConnectionException {
         return executeRestQuery("search.xml?searchQuery=" + EncodingUtils.urlEncode(searchTerm, "UTF-8")
-                + "&searchType=" + EncodingUtils.urlEncode(searchType, "UTF-8")).armorySearch;
+                + "&searchType=all"
+                + "&selectedTab=" + EncodingUtils.urlEncode(searchType.tabName, "UTF-8")).armorySearch;
     }
 
     /**

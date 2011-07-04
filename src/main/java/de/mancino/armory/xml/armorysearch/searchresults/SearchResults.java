@@ -46,4 +46,7 @@ public class SearchResults {
     @XmlElement(name = "character")
     @XmlElementWrapper(name="characters")
     public List<Character> characters;
+    @XmlElement(name = "item")
+    @XmlElementWrapper(name="items")
+    public List<Character> items;
 }
