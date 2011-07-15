@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 import de.mancino.armory.xml.armorysearch.searchresults.character.Character;
+import de.mancino.armory.xml.armorysearch.searchresults.item.Item;
 
 /**
  *
@@ -48,5 +49,5 @@ public class SearchResults {
     public List<Character> characters;
     @XmlElement(name = "item")
     @XmlElementWrapper(name="items")
-    public List<Character> items;
+    public List<Item> items;
 }
