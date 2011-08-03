@@ -166,19 +166,20 @@ public class Armory {
      * @param password Password for the BattleNet Account
      * @param primaryCharname Charname used for armory interaction
      * @param primaryRealm Characters realm
-     *
-     * @throws ArmoryConnectionException Error logging in, this happen if
-     *         username/password or the charname/realm combination is wrong
      */
     public Armory(final String accountName, final String password,
-            final String primaryCharname, final String primaryRealm) throws ArmoryConnectionException {
+            final String primaryCharname, final String primaryRealm) {
         registerResteasyProviders();
         this.primaryCharname = primaryCharname;
         this.primaryRealm = primaryRealm;
         this.accountName = accountName;
         this.password = password;
-        login();
-        selectPrimaryCharacter(primaryCharname, primaryRealm);
+        try {
+            login();
+            selectPrimaryCharacter(primaryCharname, primaryRealm);
+        } catch (ArmoryConnectionException e) {
+            LOG.error("Armory-Login wasn't possible during initialization!");
+        }
     }
 
     /**
@@ -191,19 +192,6 @@ public class Armory {
     }
 
     /**
-     * Attempt to relog into BattleNet.
-     * This shouldn't be necessary any more, since a relog is automatically attempted.
-     * This method is deprecated and will be removed in future version.
-     *
-     * @throws ArmoryConnectionException Error while relogging.
-     */
-    @Deprecated
-    public void relog() throws ArmoryConnectionException {
-        login();
-        selectPrimaryCharacter(primaryCharname, primaryRealm);
-    }
-
-    /**
      * Login to BattleNet
      *
      * @throws ArmoryConnectionException Error while logging in.
@@ -212,7 +200,7 @@ public class Armory {
         globalHttpClient = new DefaultHttpClient();
         //httpClient. getParams().setCookiePolicy(CookiePolicy.RFC_2109);
         final String armoryUrl = BATTLENET_BASE_URL
-            + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
+                + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
         globalHttpClient.setRedirectHandler(new PostRedirectHandler());
         if(LOG.isDebugEnabled()) {
             LOG.debug("Logging in to Armory ("+accountName +":" + password.charAt(0) + "***"
@@ -352,7 +340,7 @@ public class Armory {
      * @throws ArmoryConnectionException Error while connecting to armory
      */
     protected void executeJsonPost(final String requestPath, final boolean relogOnError,
-                   final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+            final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
         try {
             new RetryableRequest<Void>() {
                 @Override
@@ -364,7 +352,8 @@ public class Armory {
                 @Override
                 protected void errorCleanup() throws Throwable {
                     if(relogOnError) {
-                        relog();
+                        login();
+                        selectPrimaryCharacter(primaryCharname, primaryRealm);
                     }
                 }
             }.requestWithRetries();
@@ -384,7 +373,7 @@ public class Armory {
      * @throws ArmoryConnectionException Error connencting to armory
      */
     private void internalExecuteJsonPost(final String requestPath,
-                 final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+            final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
         final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
         try {
             LOG.debug("Executing 'JSON' POST Method: " + jsonPostUrl);
@@ -448,7 +437,8 @@ public class Armory {
 
                 @Override
                 protected void errorCleanup() throws Throwable {
-                    relog();
+                    login();
+                    selectPrimaryCharacter(primaryCharname, primaryRealm);
                 }
             }.requestWithRetries();
         } catch (Throwable t) {
@@ -507,10 +497,10 @@ public class Armory {
      * @throws ArmoryConnectionException Error conenction to armory
      */
     public AuctionSearch searchAuction(final String searchTerm,
-                         final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
+            final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
         return searchAuction(searchTerm, -1, -1, quality, exactMatch);
     }
-    
+
 
     /**
      * Searches the auction-house of the given primary character for items with given name and Quality.
@@ -527,8 +517,8 @@ public class Armory {
      * @throws ArmoryConnectionException Error conenction to armory
      */
     public AuctionSearch searchAuction(final String searchTerm,
-                         final int minLevel, final int maxLevel,
-                         final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
+            final int minLevel, final int maxLevel,
+            final Quality quality, final boolean exactMatch) throws ArmoryConnectionException {
         final AuctionSearch auctionSearch = executeRestQuery("auctionhouse/search/?"+
                 "sort=rarity"+
                 "&reverse=false"+
