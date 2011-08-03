@@ -10,7 +10,7 @@
     <groupId>de.mancino.armory</groupId>
     <artifactId>armory</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.0</version>
+    <version>1.22.0</version>
     <name>armory</name>
     <url>http://www.mancino-net.de</url>
     <description>
