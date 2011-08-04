@@ -1,12 +1,15 @@
 package de.mancino.utils;
 
+import org.apache.http.Header;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.ProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultRedirectHandler;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -17,26 +20,29 @@ import org.apache.http.protocol.HttpContext;
  *
  * @author mmancino
  */
-public class PostRedirectHandler extends DefaultRedirectHandler {
+public class PostRedirectStrategy extends DefaultRedirectStrategy {
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isRedirectRequested(
+    public boolean isRedirected(
+            final HttpRequest request,
             final HttpResponse response,
-            final HttpContext context) {
+            final HttpContext context) throws ProtocolException {
         if (response == null) {
             throw new IllegalArgumentException("HTTP response may not be null");
         }
 
         int statusCode = response.getStatusLine().getStatusCode();
+        String method = request.getRequestLine().getMethod();
+        Header locationHeader = response.getFirstHeader("location");
         switch (statusCode) {
         case HttpStatus.SC_MOVED_TEMPORARILY:
+            return (method.equalsIgnoreCase(HttpGet.METHOD_NAME)
+                || method.equalsIgnoreCase(HttpPost.METHOD_NAME)
+                || method.equalsIgnoreCase(HttpHead.METHOD_NAME)) && locationHeader != null;
         case HttpStatus.SC_MOVED_PERMANENTLY:
         case HttpStatus.SC_TEMPORARY_REDIRECT:
-            HttpRequest request = (HttpRequest) context.getAttribute(
-                    ExecutionContext.HTTP_REQUEST);
-            String method = request.getRequestLine().getMethod();
             return method.equalsIgnoreCase(HttpGet.METHOD_NAME)
                 || method.equalsIgnoreCase(HttpHead.METHOD_NAME)
                 || method.equalsIgnoreCase(HttpPost.METHOD_NAME);

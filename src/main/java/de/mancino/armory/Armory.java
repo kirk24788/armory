@@ -51,7 +51,7 @@ import de.mancino.armory.xml.itemtooltips.ItemTooltip;
 import de.mancino.exceptions.ArmoryConnectionException;
 import de.mancino.exceptions.ArmoryRequestError;
 import de.mancino.utils.EncodingUtils;
-import de.mancino.utils.PostRedirectHandler;
+import de.mancino.utils.PostRedirectStrategy;
 import de.mancino.utils.RetryableRequest;
 
 /**
@@ -83,12 +83,21 @@ public class Armory {
      * Region. This is mainly used for URL-Prefixes.
      */
     private static final String REGION = "eu";
+    
+    /**
+     * Language.
+     */
+    private static final String LANGUAGE = "de";
 
     /**
      * Base-URL for WoW Armory.
      */
-    private static final String ARMORY_BASE_URL = "http://" + REGION + ".wowarmory.com/";
-
+    private static final String ARMORY_BASE_URL = "https://" + REGION + ".battle.net/wow/" + LANGUAGE + "/";
+    private static final String PLAIN_BASE_URL = "http://" + REGION + ".battle.net/wow/" + LANGUAGE + "/";
+    private static final String SECURE_BASE_URL = "https://" + REGION + ".battle.net/wow/" + LANGUAGE + "/";
+//https://eu.battle.net/wow/de/vault/character/
+    //https://eu.battle.net/wow/de/vault/character/auction/alliance/bid
+    //https://eu.battle.net/wow/de/vault/character/auction/alliance/bid
     /**
      * Base-URL for BattleNet.
      */
@@ -138,7 +147,7 @@ public class Armory {
         password = "";
     }
 
-    private DefaultHttpClient createHttpClient() {
+    public DefaultHttpClient createHttpClient() {
         // Create and initialize HTTP parameters
         HttpParams params = new BasicHttpParams();
         ConnManagerParams.setMaxTotalConnections(params, 100);
@@ -176,7 +185,7 @@ public class Armory {
         this.password = password;
         try {
             login();
-            selectPrimaryCharacter(primaryCharname, primaryRealm);
+         //  selectPrimaryCharacter(primaryCharname, primaryRealm);
         } catch (ArmoryConnectionException e) {
             LOG.error("Armory-Login wasn't possible during initialization!");
         }
@@ -200,10 +209,10 @@ public class Armory {
         globalHttpClient = new DefaultHttpClient();
         //httpClient. getParams().setCookiePolicy(CookiePolicy.RFC_2109);
         final String armoryUrl = BATTLENET_BASE_URL
-                + "login/en/login.xml?app=armory&ref=http%3A%2F%2Feu.wowarmory.com%2Findex.xml&cr=true";
-        globalHttpClient.setRedirectHandler(new PostRedirectHandler());
-        if(LOG.isDebugEnabled()) {
-            LOG.debug("Logging in to Armory ("+accountName +":" + password.charAt(0) + "***"
+                + "login/en/?app=armory&ref=https%3A%2F%2Feu.battle.net%2Fwow%2Fen%2F";
+        globalHttpClient.setRedirectStrategy(new PostRedirectStrategy());
+        if(LOG.isInfoEnabled()) {
+            LOG.info("Logging in to Armory ("+accountName +":" + password.charAt(0) + "***"
                     + password.charAt(password.length()-1) + "): " + armoryUrl);
         }
         final HttpPost postLogin = new HttpPost(armoryUrl);
@@ -226,7 +235,64 @@ public class Armory {
             throw new ArmoryConnectionException("Login failed! Missing Location Header!", e);
         }
     }
+    
+    private String getCookieValue(final String cookieName) {
+        LOG.debug("Searching for '{}' cookie", cookieName);
+        for(final Cookie cookie : globalHttpClient.getCookieStore().getCookies()) {
+            LOG.trace(" {}: {}", cookie.getName(), cookie.getValue());
+            if(cookie.getName().equals(cookieName)) {
+                return cookie.getValue();
+            }
+        }
+        return "";
+    }
 
+    public void bid(final long auctionId, final long money) throws ArmoryConnectionException {
+        // https://eu.battle.net/wow/de/vault/character/auction/alliance/bid
+        LOG.info("Buying Auction {} ({})", auctionId, money);
+        internalExecuteJsonPost("vault/character/auction/alliance/bid",
+                new BasicNameValuePair("auc", String.valueOf(auctionId)),
+                new BasicNameValuePair("money", String.valueOf(money)),
+                new BasicNameValuePair("token", getCookieValue("xstoken")));
+    }
+    
+public void selectCharacter(final int characterId) throws ArmoryConnectionException {
+    // /pref/character
+
+    LOG.info("Selecting Character {}", characterId);
+    // "/wow/de/pref/character"
+    /*
+     * 
+  Anfrage-URL:http://eu.battle.net/wow/de/pref/character
+Anfragemethode:POST
+Status-Code:200 OK
+Anfrage-HeaderQuelltext anzeigen
+Accept: * /*
+Content-Type:application/x-www-form-urlencoded
+Origin:http://eu.battle.net
+Referer:http://eu.battle.net/wow/de/character/forscherliga/B%C3%A6n/advanced
+User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7) AppleWebKit/534.48.3 (KHTML, like Gecko) Version/5.1 Safari/534.48.3
+X-Requested-With:XMLHttpRequest
+FormulardatenURL-Codiert anzeigen
+index:3
+xstoken:b08d3418-39bf-4836-914e-3e2600b604b8
+     */
+    try {
+        System.err.println(internalExecutePost(SECURE_BASE_URL, "vault/character/auction/alliance/money"));
+        String t = internalExecutePost(SECURE_BASE_URL, "pref/character",
+                new BasicNameValuePair("index", String.valueOf(characterId)),
+                new BasicNameValuePair("xstoken", getCookieValue("xstoken")));
+        
+        System.err.println(internalExecutePost(SECURE_BASE_URL, "vault/character/auction/alliance/money"));
+    } catch (IllegalStateException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+}
+    
     /**
      * Fetch Character-Sheet for a given Character.
      *
@@ -374,7 +440,41 @@ public class Armory {
      */
     private void internalExecuteJsonPost(final String requestPath,
             final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
-        final String jsonPostUrl = ARMORY_BASE_URL + requestPath;
+        internalExecuteJsonPost(ARMORY_BASE_URL, requestPath, parameters);
+    }
+    
+    private String internalExecutePost(final String baseUrl, final String requestPath, 
+            final BasicNameValuePair ... parameters) throws IllegalStateException, IOException {
+        final String postUrl = baseUrl + requestPath;
+        LOG.debug("Executing  POST Method: " + postUrl);
+        final HttpPost httpPost = new HttpPost(postUrl);
+        if(parameters.length > 0) {
+            final List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+            for(final BasicNameValuePair parameter : parameters) {
+                nvps.add(parameter);
+            }
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+            } catch (final UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        httpPost.setHeader("X-Requested-With","XMLHttpRequest");
+        httpPost.setHeader("Referer","https://eu.battle.net/wow/de/vault/character/auction/alliance/browse");
+        httpPost.setHeader("Origin","https://eu.battle.net");
+        final HttpResponse summaryResponse = globalHttpClient.execute(httpPost);
+        
+        final String stringResponse = IOUtils.toString(summaryResponse.getEntity().getContent());
+        if(LOG.isTraceEnabled()) {
+            LOG.trace(stringResponse);
+        }
+        return stringResponse;
+    }
+    
+    
+    private void internalExecuteJsonPost(final String baseUrl, final String requestPath,
+            final BasicNameValuePair ...parameters) throws ArmoryConnectionException {
+        final String jsonPostUrl = baseUrl + requestPath;
         try {
             LOG.debug("Executing 'JSON' POST Method: " + jsonPostUrl);
             final HttpPost buyoutPost = new HttpPost(jsonPostUrl);
@@ -405,7 +505,7 @@ public class Armory {
                     }
                 }
             } catch (ParseException e) {
-                throw new ArmoryConnectionException("Couldn't parse Response JSON: " + jsonResponse, e);
+                throw new ArmoryConnectionException("Couldn't parse Response JSON at: " + jsonPostUrl, e);
             }
 
         } catch (final IllegalStateException e) {
@@ -567,4 +667,33 @@ public class Armory {
         auctionSearch.end = auctionSearch.auctionItems.size();
         return auctionSearch;
     }
+    
+    
+    
+    // Vault:
+    /*
+     * 
+     * 
+   https://eu.battle.net/wow/de/vault/character/auction/alliance/money
+   
+   
+   {
+  "auctionFaction" : 0,
+  "character" : {
+    "name" : "Bæn",
+    "level" : 58,
+    "genderId" : 0,
+    "factionId" : 0,
+    "classId" : 6,
+    "className" : "Todesritter",
+    "raceId" : 4,
+    "raceName" : "Nachtelf",
+    "realmName" : "Forscherliga",
+    "achievementPoints" : 530,
+    "side" : "ALLIANCE",
+    "genderEnum" : "MALE"
+  },
+  "money" : 20401243
+}
+     */
 }
