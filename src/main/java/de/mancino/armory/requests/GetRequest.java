@@ -6,6 +6,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.mancino.armory.exceptions.RequestException;
+
 
 public class GetRequest extends GenericRequest {
     /**
@@ -28,7 +30,7 @@ public class GetRequest extends GenericRequest {
 
 
     @Override
-    protected HttpGet prepareGetMethod() {
+    protected HttpGet prepareGetMethod() throws RequestException {
         LOG.debug("Preparing GET Request for URI: " + requestPath);
         final HttpGet httpGet = new HttpGet(requestPath);
         return httpGet;

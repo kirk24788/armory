@@ -8,9 +8,7 @@ import org.apache.http.ProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultRedirectHandler;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
-import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 
 

@@ -3,6 +3,7 @@ package de.mancino.armory.requests;
 import java.io.IOException;
 
 import org.apache.http.Header;
+import org.apache.http.StatusLine;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -50,10 +51,10 @@ public abstract class GenericRequest extends Request {
     }
 
 
-    protected abstract HttpGet prepareGetMethod();
+    protected abstract HttpGet prepareGetMethod() throws RequestException;
 
     protected int executeRequest(final HttpUriRequest request) throws RequestException {
-        LOG.debug("Executing Request for URI: '{}'", request.getURI());
+        LOG.info("Executing Request for URI: '{}'", request.getURI());
         for(final Header additionalHeader : getAdditionalHeaders()) {
             request.setHeader(additionalHeader);
         }
@@ -76,6 +77,7 @@ public abstract class GenericRequest extends Request {
         if(LOG.isTraceEnabled()) {
             LOG.trace(new String(responseAsBytes));
         }
+        handleResponseStatus(request, response.getStatusLine());
         parseResponse(responseAsBytes);
         return response.getStatusLine().getStatusCode();
     }
@@ -91,6 +93,18 @@ public abstract class GenericRequest extends Request {
     }
 
     protected void parseResponse(final byte[] responseAsBytes) throws ResponseParsingException {
+    }
+    
+    protected void handleResponseStatus(final HttpUriRequest request, final StatusLine statusLine) throws RequestException  {
+        if (statusLine.getStatusCode() < 200) {
+            throw new IllegalStateException("Received illegal Status from HTTP Client! " + statusLine);
+        } else if (statusLine.getStatusCode() < 300) {
+            return; // OGOG
+        } else if (statusLine.getStatusCode() < 400) {
+            throw new IllegalStateException("PostRedirectStrategy isn't working! Redirects shouldn't occur! "  + statusLine);
+        } else {
+            throw new RequestException("Received Unexpected '" + statusLine + "' Status Code! for URI: " + request.getURI());
+        }
     }
 }
 
