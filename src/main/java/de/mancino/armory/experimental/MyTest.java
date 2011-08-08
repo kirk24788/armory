@@ -1,4 +1,4 @@
-package de.mancino.armory;
+package de.mancino.armory.experimental;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,6 +10,10 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import org.apache.commons.io.IOUtils;
+
+import de.mancino.armory.experimental.ArmoryRequest;
+import de.mancino.armory.experimental.ArmoryResponse;
+import de.mancino.armory.experimental.MobileChat;
 
 public class MyTest {
     private static final String login = 

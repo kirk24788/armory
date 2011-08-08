@@ -1,4 +1,4 @@
-package de.mancino.armory;
+package de.mancino.armory.experimental;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

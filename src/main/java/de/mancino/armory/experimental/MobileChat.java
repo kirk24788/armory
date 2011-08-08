@@ -1,4 +1,4 @@
-package de.mancino.armory;
+package de.mancino.armory.experimental;
 
 public class MobileChat {
     public static final String HOSTNAME = "80.239.186.38";
