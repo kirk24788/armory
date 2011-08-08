@@ -1,5 +1,7 @@
 package de.mancino.armory.json.api.auction;
 
+import de.mancino.armory.json.JsonResponse;
+
 /**
 {
     "realm": {
@@ -45,7 +47,7 @@ package de.mancino.armory.json.api.auction;
 }
  * @author mmancino
  */
-public class Auctions {
+public class Auctions extends JsonResponse {
     public Realm realm;
     public AuctionHouse alliance;
     public AuctionHouse horde;

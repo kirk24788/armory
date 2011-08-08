@@ -2,6 +2,7 @@ package de.mancino.armory.requests.vault;
 
 import java.io.IOException;
 
+import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -10,8 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.exceptions.ResponseParsingException;
+import de.mancino.armory.json.JsonResponse;
 
-public class ArmoryVaultJsonRequest<T> extends ArmoryVaultRequest {
+public class ArmoryVaultJsonRequest<T extends JsonResponse> extends ArmoryVaultRequest {
     /**
      * Logger instance of this class.
      */
@@ -19,12 +21,14 @@ public class ArmoryVaultJsonRequest<T> extends ArmoryVaultRequest {
 
     private T jsonObject;
     private Class<T> valueType;
-    
-    public ArmoryVaultJsonRequest(final String requestPath, final Class<T> valueType) {
-        this(new ArmoryBaseUri(), requestPath, valueType);
-    }
+
     public ArmoryVaultJsonRequest(final ArmoryBaseUri armoryBaseUri, final String requestPath, final Class<T> valueType) {
         super(armoryBaseUri, requestPath);
+        this.valueType = valueType;
+    }
+    public ArmoryVaultJsonRequest(final ArmoryBaseUri armoryBaseUri, final String requestPath, final Class<T> valueType,
+            final BasicNameValuePair ... parameters) {
+        super(armoryBaseUri, requestPath, parameters);
         this.valueType = valueType;
     }
     

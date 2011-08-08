@@ -1,6 +1,9 @@
 package de.mancino.armory.json.vault.bid;
 
-public class Bid {
+import de.mancino.armory.json.JsonResponse;
+
+public class Bid extends JsonResponse {
+    public int auctionFaction;
 /*
 {
   "auctionFaction" : 0,

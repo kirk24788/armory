@@ -10,8 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.exceptions.ResponseParsingException;
+import de.mancino.armory.json.JsonResponse;
 
-public class ArmoryApiJsonRequest<T> extends ArmoryApiRequest {
+public class ArmoryApiJsonRequest<T extends JsonResponse> extends ArmoryApiRequest {
     /**
      * Logger instance of this class.
      */

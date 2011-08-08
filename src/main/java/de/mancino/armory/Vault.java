@@ -7,6 +7,7 @@ import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.exceptions.RequestException;
 import de.mancino.armory.json.api.auction.Auction;
 import de.mancino.armory.json.vault.AuctionFaction;
+import de.mancino.armory.json.vault.bid.Bid;
 import de.mancino.armory.json.vault.money.Money;
 import de.mancino.armory.requests.RetryableRequest;
 import de.mancino.armory.requests.api.GuildApiRequest;
@@ -77,15 +78,15 @@ public class Vault {
     }
 
 
-    public void bid(AuctionFaction faction, Auction auction, long bid) throws RequestException {
-        bid(faction, auction.auc, bid);
+    public Bid bid(AuctionFaction faction, Auction auction, long bid) throws RequestException {
+        return bid(faction, auction.auc, bid);
     }
     
-    public void buyout(AuctionFaction faction, Auction auction) throws RequestException {
-        bid(faction ,auction.auc, auction.buyout);
+    public Bid buyout(AuctionFaction faction, Auction auction) throws RequestException {
+        return bid(faction ,auction.auc, auction.buyout);
     }
 
-    public void bid(AuctionFaction faction, long auctionId, long bid) throws RequestException {
+    public Bid bid(AuctionFaction faction, long auctionId, long bid) throws RequestException {
         verifyActiveChar();
         final RetryableRequest<AuctionBidVaultRequest> request = 
                 new RetryableRequest<AuctionBidVaultRequest>(new AuctionBidVaultRequest(armoryBaseUri, faction, auctionId, bid)) {
@@ -95,5 +96,6 @@ public class Vault {
             }
         };
         request.post();
+        return request.getRequest().getObject();
     }
 }

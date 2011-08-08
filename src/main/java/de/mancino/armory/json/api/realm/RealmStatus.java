@@ -2,6 +2,8 @@ package de.mancino.armory.json.api.realm;
 
 import java.util.List;
 
+import de.mancino.armory.json.JsonResponse;
+
 /**
 {
   "realms":[
@@ -25,6 +27,6 @@ import java.util.List;
 }
  * @author mmancino
  */
-public class RealmStatus {
+public class RealmStatus extends JsonResponse {
     public List<Realm> realms;
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import de.mancino.armory.json.JsonResponse;
 import de.mancino.armory.json.api.character.appearance.Appearance;
 import de.mancino.armory.json.api.character.guild.Guild;
 import de.mancino.armory.json.api.character.items.Items;
@@ -23,7 +24,7 @@ import de.mancino.armory.json.api.generic.achievments.Achievements;
  * @author mmancino
  *
  */
-public class Character {
+public class Character extends JsonResponse {
     public String realm;
     public String name;
     public int level;

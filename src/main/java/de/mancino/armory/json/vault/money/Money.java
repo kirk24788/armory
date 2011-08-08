@@ -1,5 +1,7 @@
 package de.mancino.armory.json.vault.money;
 
+import de.mancino.armory.json.JsonResponse;
+
 
 /**
  
@@ -12,9 +14,8 @@ package de.mancino.armory.json.vault.money;
  * @author mmancino
  *
  */
-public class Money {
+public class Money extends JsonResponse {
     public int auctionFaction;
     public Character character;
     public long money;
-    
 }

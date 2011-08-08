@@ -2,6 +2,8 @@ package de.mancino.armory.json.api.auction;
 
 import java.util.List;
 
+import de.mancino.armory.json.JsonResponse;
+
 /**
 {
   "files":[
@@ -13,6 +15,6 @@ import java.util.List;
 }
  * @author mmancino
  */
-public class AuctionFiles {
+public class AuctionFiles extends JsonResponse  {
     public List<AuctionFile> files;
 }

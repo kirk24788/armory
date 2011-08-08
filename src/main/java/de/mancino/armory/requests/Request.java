@@ -87,6 +87,8 @@ public abstract class Request {
                 return true;
             }
         });
+     //   mapper.enableDefaultTyping(); // default to using DefaultTyping.OBJECT_AND_NON_CONCRETE
+    //    mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
         return mapper;
     }
     
