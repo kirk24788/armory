@@ -5,15 +5,6 @@ import de.mancino.armory.json.api.character.Character;
 import de.mancino.armory.json.api.character.CharacterFields;
 
 public class CharacterApiRequest extends ArmoryApiJsonRequest<Character> {
-
-    public CharacterApiRequest(final String realmName, final String charName, final boolean allFields) {
-        this(new ArmoryBaseUri(), realmName, charName, allFields);
-    }
-    
-    public CharacterApiRequest(final String realmName, final String charName, final CharacterFields ... fields) {
-        this(new ArmoryBaseUri(), realmName, charName, fields);
-    }
-
     public CharacterApiRequest(final ArmoryBaseUri armoryBaseUri, final String realmName, final String charName,
             final boolean allFields) {
         this(new ArmoryBaseUri(), realmName, charName, allFields ? CharacterFields.values() : new CharacterFields[]{});

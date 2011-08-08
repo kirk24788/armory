@@ -3,10 +3,6 @@ package de.mancino.armory.requests.api;
 import java.io.IOException;
 
 import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.DeserializationProblemHandler;
-import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -14,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.exceptions.ResponseParsingException;
-import de.mancino.armory.requests.Request;
 
 public class ArmoryApiJsonRequest<T> extends ArmoryApiRequest {
     /**

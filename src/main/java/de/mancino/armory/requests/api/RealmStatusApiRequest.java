@@ -1,18 +1,9 @@
 package de.mancino.armory.requests.api;
 
 import de.mancino.armory.datatypes.ArmoryBaseUri;
-import de.mancino.armory.json.api.character.Character;
-import de.mancino.armory.json.api.character.CharacterFields;
-import de.mancino.armory.json.api.guild.Guild;
-import de.mancino.armory.json.api.guild.GuildFields;
 import de.mancino.armory.json.api.realm.RealmStatus;
 
 public class RealmStatusApiRequest extends ArmoryApiJsonRequest<RealmStatus> {
-
-    public RealmStatusApiRequest(final String ... realms) {
-        this(new ArmoryBaseUri(), realms);
-    }
-
     public RealmStatusApiRequest(final ArmoryBaseUri armoryBaseUri, final String ... realms) {
         super(armoryBaseUri, buildRequestPath(realms), RealmStatus.class);
     }

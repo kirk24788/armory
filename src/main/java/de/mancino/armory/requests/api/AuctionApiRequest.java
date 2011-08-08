@@ -6,7 +6,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.exceptions.RequestException;
 import de.mancino.armory.json.api.auction.AuctionFile;
-import de.mancino.armory.json.api.auction.AuctionFiles;
 import de.mancino.armory.json.api.auction.Auctions;
 
 public class AuctionApiRequest extends ArmoryApiJsonRequest<Auctions> {
@@ -16,13 +15,6 @@ public class AuctionApiRequest extends ArmoryApiJsonRequest<Auctions> {
     private static long lastFetchTimestamp = 0;
     private long nextFetchTimestamp = 0;
     private static Auctions lastAuctions = new Auctions();
-    
-    public AuctionApiRequest(final String realmName) {
-        this(new ArmoryBaseUri(), realmName, false);
-    }
-    public AuctionApiRequest(final String realmName, boolean forceReload) {
-        this(new ArmoryBaseUri(), realmName, forceReload);
-    }
 
     public AuctionApiRequest(final ArmoryBaseUri armoryBaseUri, final String realmName) {
         this(armoryBaseUri, realmName, false);
@@ -35,7 +27,7 @@ public class AuctionApiRequest extends ArmoryApiJsonRequest<Auctions> {
 
     @Override
     protected HttpGet prepareGetMethod() throws RequestException {
-        final AuctionFilesApiRequest filesRequest = new AuctionFilesApiRequest(realmName);
+        final AuctionFilesApiRequest filesRequest = new AuctionFilesApiRequest(getArmoryBaseUri(),realmName);
         filesRequest.get();
         if(filesRequest.getObject().files == null | filesRequest.getObject().files.size()==0) {
             throw new RequestException("No auction Files for Realm '" + realmName +"'");
