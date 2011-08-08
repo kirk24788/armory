@@ -16,8 +16,8 @@ public class ItemFactory {
     public static ItemFactory newItem() {
         return new ItemFactory();
     }
-    public OpItem createAs(final String name) {
-        return new OpItem(name, stats);
+    public OptimizableItem createAs(final String name) {
+        return new OptimizableItem(name, stats);
     }
     
     public ItemFactory critRating(double value) {

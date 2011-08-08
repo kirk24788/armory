@@ -16,16 +16,16 @@ public class ScalingTest {
      * @throws Exception 
      */
     public static void main(String[] args) throws Exception {
-        final OpItem coalwalker = ItemFactory.newItem().intellect(282).critRating(208).hasteRating(172).createAs("Coalwalker");
-        final OpItem signet = ItemFactory.newItem().intellect(190).hitRating(121).critRating(131).createAs("Signet of High Arcanist");
-        final OpItem band = ItemFactory.newItem().intellect(190).critRating(121).hasteRating(131).createAs("Band of Secret Names");
-        final OpItem fragment = ItemFactory.newItem().intellect(201).critRating(121).masteryRating(142).createAs("Spirit Fragment Band");
-        final OpItem items[] = new OpItem[]{signet, band, fragment};
+        final OptimizableItem coalwalker = ItemFactory.newItem().intellect(282).critRating(208).hasteRating(172).createAs("Coalwalker");
+        final OptimizableItem signet = ItemFactory.newItem().intellect(190).hitRating(121).critRating(131).createAs("Signet of High Arcanist");
+        final OptimizableItem band = ItemFactory.newItem().intellect(190).critRating(121).hasteRating(131).createAs("Band of Secret Names");
+        final OptimizableItem fragment = ItemFactory.newItem().intellect(201).critRating(121).masteryRating(142).createAs("Spirit Fragment Band");
+        final OptimizableItem items[] = new OptimizableItem[]{signet, band, fragment};
         System.err.println(coalwalker);
         System.err.println(coalwalker.bestReforge(AFFLI));
         for(ScalingFactors sf : SCALES) {
-            for(OpItem item : items) {
-                final OpItem best = item.bestReforge(sf);
+            for(OptimizableItem item : items) {
+                final OptimizableItem best = item.bestReforge(sf);
                 System.err.println(best.getValue(sf) + ": " + best);
             }
             System.err.println("****");
