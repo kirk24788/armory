@@ -12,9 +12,10 @@ public class AuctionApiRequest extends ArmoryApiJsonRequest<Auctions> {
 
     private final String realmName;
     private final boolean forceReload;
-    private static long lastFetchTimestamp = 0;
+    private long lastFetchTimestamp = 0;
     private long nextFetchTimestamp = 0;
-    private static Auctions lastAuctions = new Auctions();
+    private Auctions lastAuctions = new Auctions();
+
 
     public AuctionApiRequest(final ArmoryBaseUri armoryBaseUri, final String realmName) {
         this(armoryBaseUri, realmName, false);
