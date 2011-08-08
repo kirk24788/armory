@@ -2,7 +2,7 @@ package de.mancino.armory.requests.vault;
 
 import org.apache.http.message.BasicNameValuePair;
 
-import de.mancino.armory.ArmoryBaseUri;
+import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.exceptions.ResponseParsingException;
 import de.mancino.armory.json.vault.AuctionFaction;
 

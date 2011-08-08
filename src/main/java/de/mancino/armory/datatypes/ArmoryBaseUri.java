@@ -1,4 +1,4 @@
-package de.mancino.armory;
+package de.mancino.armory.datatypes;
 
 public class ArmoryBaseUri {
 

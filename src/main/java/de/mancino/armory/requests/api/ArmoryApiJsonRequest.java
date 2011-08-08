@@ -12,7 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.mancino.armory.ArmoryBaseUri;
+import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.exceptions.ResponseParsingException;
 import de.mancino.armory.requests.Request;
 

@@ -1,6 +1,6 @@
 package de.mancino.armory.requests.api;
 
-import de.mancino.armory.ArmoryBaseUri;
+import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.requests.GetRequest;
 
 public class ArmoryApiRequest extends GetRequest {
