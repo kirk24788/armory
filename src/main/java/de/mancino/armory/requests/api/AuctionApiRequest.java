@@ -49,6 +49,7 @@ public class AuctionApiRequest extends ArmoryApiJsonRequest<Auctions> {
             final int returnCode = super.executeRequest(request);
             lastFetchTimestamp = nextFetchTimestamp;
             lastAuctions = super.getObject();
+            lastAuctions.timestamp = lastFetchTimestamp;
             return returnCode;
         } else {
             return 200;

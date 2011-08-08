@@ -12,11 +12,7 @@ public class LoginVaultRequest extends PostRequest {
      * Logger instance of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(LoginVaultRequest.class);
-    
-    public LoginVaultRequest(final String accountName, final String password) {
-        this(new ArmoryBaseUri(), accountName, password);
-    }
-    
+
     public LoginVaultRequest(final ArmoryBaseUri armoryBaseUri, final String accountName, final String password) {
         super(armoryBaseUri.getBaseUri() + "login/" + armoryBaseUri.getLanguage().language + 
                 "/?app=armory&ref=https%3A%2F%2Feu.battle.net%2Fwow%2F" 

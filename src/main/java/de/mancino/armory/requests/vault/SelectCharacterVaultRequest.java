@@ -22,11 +22,7 @@ public class SelectCharacterVaultRequest extends ArmoryVaultRequest {
 
     private String index;
 
-    public SelectCharacterVaultRequest(final String realmName, final String charName) {
-        this(new ArmoryBaseUri(), realmName, charName);
-    }
-
-    public SelectCharacterVaultRequest(ArmoryBaseUri armoryBaseUri, final String realmName, final String charName) {
+    public SelectCharacterVaultRequest(final ArmoryBaseUri armoryBaseUri, final String realmName, final String charName) {
         super(armoryBaseUri, "pref/character");
         index = getCharacterIndex(armoryBaseUri, realmName, charName);
         selectCharacterParams = new BasicNameValuePair[] {
@@ -62,7 +58,7 @@ public class SelectCharacterVaultRequest extends ArmoryVaultRequest {
     private String getCharacterIndex(final ArmoryBaseUri armoryBaseUri, final String realmName, final String charName) {
         final String encodedRealmName = urlEncode(realmName);
         final String encodedCharName = urlEncode(charName);
-        GetRequest getRequest = new GetRequest(armoryBaseUri.getHompageUri()) {
+        GetRequest getRequest = new GetRequest(armoryBaseUri.getVaultUri()) {
             private static final String PIN_STRING = "CharSelect.pin(";
             private int charId;
             @Override

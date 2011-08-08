@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import de.mancino.armory.exceptions.RequestException;
 
-public class RetryableRequest extends Request {
+public class RetryableRequest<T extends Request> extends Request {
     /**
      * Logger instance of this class.
      */
@@ -24,7 +24,7 @@ public class RetryableRequest extends Request {
     /**
      * Number of retries for this instance
      */
-    private final Request request;
+    private final T request;
 
     /**
      * Executes the given request up to {@link #DEFAULT_MAX_REQUEST_RETRIES}
@@ -33,7 +33,7 @@ public class RetryableRequest extends Request {
      * 
      * @param request Request which should be retried
      */
-    public RetryableRequest(final Request request) {
+    public RetryableRequest(final T request) {
         this.request = request;
         this.maxRetries = DEFAULT_MAX_REQUEST_RETRIES;
     }
@@ -46,7 +46,7 @@ public class RetryableRequest extends Request {
      * @param request Request which should be retried
      * @param maxRetries maximum number of retries per request
      */
-    public RetryableRequest(final Request request, final int maxRetries) {
+    public RetryableRequest(final T request, final int maxRetries) {
         this.request = request;
         this.maxRetries = maxRetries;
     }
@@ -59,7 +59,7 @@ public class RetryableRequest extends Request {
         RequestException lastException = null;
         for(int currentTry=1; currentTry<=maxRetries ; currentTry++) {
             try {
-                return request.get();
+                return getRequest().get();
             } catch (RequestException requestException) {
                 LOG.error("Error during Request " + currentTry + ": " + requestException.getLocalizedMessage());
                 LOG.debug("Stacktrace: ", requestException);
@@ -83,7 +83,7 @@ public class RetryableRequest extends Request {
         RequestException lastException = null;
         for(int currentTry=1; currentTry<=maxRetries ; currentTry++) {
             try {
-                return request.post();
+                return getRequest().post();
             } catch (RequestException requestException) {
                 LOG.error("Error during Request " + currentTry + ": " + requestException.getLocalizedMessage());
                 LOG.debug("Stacktrace: ", requestException);
@@ -107,5 +107,14 @@ public class RetryableRequest extends Request {
      * @throws Throwable Error while cleaning up erroneous request.
      */
     protected void errorCleanup() throws Throwable {
+    }
+
+    /**
+     * Returns the request.
+     * 
+     * @return the request
+     */
+    public T getRequest() {
+        return request;
     }
 }

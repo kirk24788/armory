@@ -50,4 +50,5 @@ public class Auctions {
     public AuctionHouse alliance;
     public AuctionHouse horde;
     public AuctionHouse neutral;
+    public long timestamp = 0;
 }

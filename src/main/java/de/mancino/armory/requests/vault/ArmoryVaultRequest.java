@@ -8,6 +8,6 @@ import de.mancino.armory.requests.PostRequest;
 public class ArmoryVaultRequest extends PostRequest {
     public ArmoryVaultRequest(final ArmoryBaseUri armoryBaseUri, final String requestPath, 
             final BasicNameValuePair ... parameters) {
-        super(armoryBaseUri.getHompageUri() + requestPath, parameters);
+        super(armoryBaseUri.getVaultUri() + requestPath, parameters);
     }
 }

@@ -28,7 +28,7 @@ public class ArmoryBaseUri {
         return "https://" + region.hostName + "/";
     }
 
-    public String getHompageUri() {
+    public String getVaultUri() {
         return "https://" + region.hostName + "/wow/" + language.language + "/";
     }
     public String getApiUri() {
