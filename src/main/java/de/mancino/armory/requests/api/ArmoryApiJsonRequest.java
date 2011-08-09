@@ -33,10 +33,13 @@ public class ArmoryApiJsonRequest<T extends JsonResponse> extends ArmoryApiReque
             final String responseAsString = new String(responseAsBytes);
             LOG.trace("Parsing JSON Response:\n{}", responseAsString);
             jsonObject = mapper.readValue(responseAsString, valueType);
+            if(jsonObject.error != null) {
+                throw new ResponseParsingException("Error " + jsonObject.error.code + ": " + jsonObject.error.message);
+            }
         } catch (JsonParseException e) {
             throw new ResponseParsingException("Parsing exception while processing Response!", e);
         } catch (JsonMappingException e) {
-            throw new ResponseParsingException(e.getLocalizedMessage(), e);
+            throw new ResponseParsingException("Parsing exception while mapping Response!", e);
         } catch (IOException e) {
             throw new ResponseParsingException("IO Exception while processing Response!", e);
         }

@@ -78,15 +78,15 @@ public class Vault {
     }
 
 
-    public Bid bid(AuctionFaction faction, Auction auction, long bid) throws RequestException {
+    public Bid bid(final AuctionFaction faction, final Auction auction, final long bid) throws RequestException {
         return bid(faction, auction.auc, bid);
     }
     
-    public Bid buyout(AuctionFaction faction, Auction auction) throws RequestException {
+    public Bid buyout(final AuctionFaction faction, final Auction auction) throws RequestException {
         return bid(faction ,auction.auc, auction.buyout);
     }
 
-    public Bid bid(AuctionFaction faction, long auctionId, long bid) throws RequestException {
+    public Bid bid(final AuctionFaction faction, final long auctionId, final long bid) throws RequestException {
         verifyActiveChar();
         final RetryableRequest<AuctionBidVaultRequest> request = 
                 new RetryableRequest<AuctionBidVaultRequest>(new AuctionBidVaultRequest(armoryBaseUri, faction, auctionId, bid)) {
