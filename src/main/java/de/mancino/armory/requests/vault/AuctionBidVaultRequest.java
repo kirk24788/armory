@@ -16,19 +16,6 @@ public class AuctionBidVaultRequest extends ArmoryVaultJsonRequest<Bid> {
                 new BasicNameValuePair("money",  String.valueOf(bid)),
                 new BasicNameValuePair("xstoken", getCookieValue("xstoken"))});
     }
-
-    @Override
-    protected void parseResponse(byte[] responseAsBytes) throws ResponseParsingException {
-        super.parseResponse(responseAsBytes);
-        System.err.println(new String(responseAsBytes));
-    }
-    
-    @Override
-    public int post() throws RequestException {
-        int r = super.post();
-        System.err.println("RESP: " + r);
-        return r;
-    }
     /**
 Falscher Account:
 
