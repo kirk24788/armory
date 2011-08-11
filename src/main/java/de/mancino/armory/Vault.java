@@ -1,5 +1,7 @@
 package de.mancino.armory;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +17,9 @@ import de.mancino.armory.requests.vault.LoginVaultRequest;
 import de.mancino.armory.requests.vault.MoneyVaultRequest;
 import de.mancino.armory.requests.vault.SelectCharacterVaultRequest;
 
-public class Vault {
+public class Vault implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     private final ArmoryBaseUri armoryBaseUri; 
     private final String accountName; 
     private final String password; 

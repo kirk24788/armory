@@ -1,5 +1,6 @@
 package de.mancino.armory;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -10,7 +11,9 @@ import de.mancino.armory.exceptions.RequestException;
 import de.mancino.armory.requests.wowhead.ItemWowheadRequest;
 import de.mancino.armory.xml.wowhead.item.Item;
 
-public class Wowhead {
+public class Wowhead implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     /**
      * Logger instance of this class.
      */

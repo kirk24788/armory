@@ -1,5 +1,6 @@
 package de.mancino.armory;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -21,7 +22,9 @@ import de.mancino.armory.requests.api.GuildApiRequest;
 import de.mancino.armory.requests.api.ItemApiRequest;
 import de.mancino.armory.requests.api.RealmStatusApiRequest;
 
-public class Api {
+public class Api implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     /**
      * Logger instance of this class.
      */
