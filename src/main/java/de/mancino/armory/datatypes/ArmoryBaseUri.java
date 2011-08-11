@@ -1,6 +1,9 @@
 package de.mancino.armory.datatypes;
 
-public class ArmoryBaseUri {
+import java.io.Serializable;
+
+public class ArmoryBaseUri implements Serializable {
+    private static final long serialVersionUID = 2L;
 
     /**
      * Region. This is mainly used for URL-Prefixes.
