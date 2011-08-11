@@ -84,6 +84,7 @@ public abstract class Request {
             public boolean handleUnknownProperty(DeserializationContext ctxt, JsonDeserializer<?> deserializer,
                     Object beanOrClass, String propertyName) throws IOException, JsonProcessingException {
                 LOG.info("Unknown Property '{}' in Class '{}'!",  propertyName , beanOrClass.getClass().getCanonicalName());
+                ctxt.getParser().skipChildren();
                 return true;
             }
         });

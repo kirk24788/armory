@@ -1,5 +1,7 @@
 package de.mancino.armory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,10 +13,12 @@ import de.mancino.armory.exceptions.RequestException;
 import de.mancino.armory.json.api.auction.Auctions;
 import de.mancino.armory.json.api.character.Character;
 import de.mancino.armory.json.api.guild.Guild;
+import de.mancino.armory.json.api.item.Item;
 import de.mancino.armory.json.api.realm.RealmStatus;
 import de.mancino.armory.requests.api.AuctionApiRequest;
 import de.mancino.armory.requests.api.CharacterApiRequest;
 import de.mancino.armory.requests.api.GuildApiRequest;
+import de.mancino.armory.requests.api.ItemApiRequest;
 import de.mancino.armory.requests.api.RealmStatusApiRequest;
 
 public class Api {
@@ -78,5 +82,22 @@ public class Api {
         final RealmStatusApiRequest request = new RealmStatusApiRequest(armoryBaseUri, realmName);
         request.get();
         return request.getObject();
+    }
+
+    public Item getItem(final int itemId) throws RequestException {
+        LOG.info("getItem(itemId={})", itemId);
+        final ItemApiRequest request = new ItemApiRequest(armoryBaseUri, itemId);
+        request.get();
+        return request.getObject();
+    }
+
+    public URL getItemURL(final Item item) {
+        LOG.info("getItem(item={})", item);
+        final String url = "http://eu.media.blizzard.com/wow/icons/56/" + item.icon.toLowerCase() + ".jpg";
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("No valid URL: " + url);
+        }
     }
 }

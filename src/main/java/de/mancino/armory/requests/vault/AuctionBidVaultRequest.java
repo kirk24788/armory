@@ -3,11 +3,8 @@ package de.mancino.armory.requests.vault;
 import org.apache.http.message.BasicNameValuePair;
 
 import de.mancino.armory.datatypes.ArmoryBaseUri;
-import de.mancino.armory.exceptions.RequestException;
-import de.mancino.armory.exceptions.ResponseParsingException;
 import de.mancino.armory.json.vault.AuctionFaction;
 import de.mancino.armory.json.vault.bid.Bid;
-import de.mancino.armory.json.vault.money.Money;
 
 public class AuctionBidVaultRequest extends ArmoryVaultJsonRequest<Bid> {
     public AuctionBidVaultRequest(final ArmoryBaseUri armoryBaseUri, final AuctionFaction faction,  final long auctionId, final long bid) {

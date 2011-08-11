@@ -28,6 +28,8 @@ public class Armory {
     public final Api api;
     
     public final Vault vault;
+    
+    public final Wowhead wowhead;
 
     
     public Armory(final String accountName, 
@@ -56,5 +58,6 @@ public class Armory {
                 password.charAt(password.length()-1), charName, realmName});
         api = new Api(armoryBaseUri, realmName);
         vault = new Vault(armoryBaseUri, accountName, password, charName, realmName);
+        wowhead = new Wowhead();
     }
 }
