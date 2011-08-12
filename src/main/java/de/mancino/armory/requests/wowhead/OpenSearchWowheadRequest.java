@@ -33,8 +33,8 @@ public class OpenSearchWowheadRequest extends GetRequest {
                     searchResults.add(OpenSearchResult.parseFromItemName(resultListToken));
                 }
                 int pos = 0;
-                while(resultListArrayTokenizer.hasMoreTokens()){
-                    final String token =  resultListArrayTokenizer.nextToken();
+                while(arrayTokenizer.hasMoreTokens()){
+                    final String token =  arrayTokenizer.nextToken();
                     if(token.length() > 5) {
                         searchResults.get(pos).parseData(token);
                         pos++;
