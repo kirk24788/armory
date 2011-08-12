@@ -42,7 +42,6 @@ public abstract class OpenSearchResult {
     }
     
     protected static String trim(final String s) {
-        System.err.println("trim: '" + s + "'");
         final String s2 = StringUtils.trimToEmpty(s);
         if(s2.startsWith("\"") && s2.endsWith("\"")) {
             return s2.substring(1, s2.length()-1);
