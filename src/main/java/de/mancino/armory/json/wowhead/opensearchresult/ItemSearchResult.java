@@ -7,6 +7,8 @@ import java.util.List;
  * @author mmancino
  */
 public class ItemSearchResult extends OpenSearchResult {
+    private static final long serialVersionUID = 2L;
+    
     public int id;
     public String icon;
     

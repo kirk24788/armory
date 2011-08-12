@@ -1,12 +1,15 @@
 package de.mancino.armory.json.wowhead.opensearchresult;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 
-public abstract class OpenSearchResult {
+public abstract class OpenSearchResult implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     public SearchResultType type;
     public String title;
 
