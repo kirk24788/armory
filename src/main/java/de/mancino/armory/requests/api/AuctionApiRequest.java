@@ -1,5 +1,7 @@
 package de.mancino.armory.requests.api;
 
+import java.io.Serializable;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 
@@ -8,8 +10,9 @@ import de.mancino.armory.exceptions.RequestException;
 import de.mancino.armory.json.api.auction.AuctionFile;
 import de.mancino.armory.json.api.auction.Auctions;
 
-public class AuctionApiRequest extends ArmoryApiJsonRequest<Auctions> {
-
+public class AuctionApiRequest extends ArmoryApiJsonRequest<Auctions> implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     private final String realmName;
     private final boolean forceReload;
     private long lastFetchTimestamp = 0;

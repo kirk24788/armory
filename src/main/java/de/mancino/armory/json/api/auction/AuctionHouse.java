@@ -1,5 +1,6 @@
 package de.mancino.armory.json.api.auction;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -17,6 +18,8 @@ import java.util.List;
     }
  * @author mmancino
  */
-public class AuctionHouse {
+public class AuctionHouse implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     public List<Auction> auctions;
 }

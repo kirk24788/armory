@@ -1,5 +1,7 @@
 package de.mancino.armory.json.api.auction;
 
+import java.io.Serializable;
+
 /**
     "realm": {
         "name": "Medivh",
@@ -7,7 +9,9 @@ package de.mancino.armory.json.api.auction;
     },
  * @author mmancino
  */
-public class Realm {
+public class Realm implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     public String name;
     public String slug;
 }
