@@ -3,12 +3,15 @@ package de.mancino.armory;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.mancino.armory.exceptions.RequestException;
+import de.mancino.armory.json.wowhead.opensearchresult.ItemSearchResult;
 import de.mancino.armory.requests.wowhead.ItemWowheadRequest;
+import de.mancino.armory.requests.wowhead.OpenSearchWowheadRequest;
 import de.mancino.armory.xml.wowhead.item.Item;
 
 public class Wowhead implements Serializable {
@@ -37,5 +40,12 @@ public class Wowhead implements Serializable {
         } catch (MalformedURLException e) {
             throw new RuntimeException("No valid URL: " + url);
         }
+    }
+
+    public List<ItemSearchResult> searchItems(final String partialItemName) throws RequestException {
+        LOG.info("searchItems(partialItemName={})", partialItemName);
+        OpenSearchWowheadRequest request = new OpenSearchWowheadRequest(partialItemName);
+        request.get();
+        return request.getSearchResults(ItemSearchResult.class);
     }
 }
