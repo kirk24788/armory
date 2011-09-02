@@ -20,12 +20,6 @@ public class AuctionApiRequest extends ArmoryApiJsonRequest<Auctions> implements
     private long nextFetchTimestamp = 0;
     private Auctions lastAuctions = new Auctions();
 
-    protected AuctionApiRequest() {
-        super(new ArmoryBaseUri(), "", Auctions.class);
-        this.realmName = null;
-        this.forceReload = false;
-    }
-
     public AuctionApiRequest(final ArmoryBaseUri armoryBaseUri, final String realmName) {
         this(armoryBaseUri, realmName, false);
     }
