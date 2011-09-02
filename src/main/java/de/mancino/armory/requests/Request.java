@@ -16,15 +16,14 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.mancino.armory.exceptions.RequestException;
 import de.mancino.utils.PostRedirectStrategy;
 
-public abstract class Request {
+public abstract class Request implements IRequest {
     /**
      * Logger instance of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Request.class);
-    
+
     /**
      * HTTP Client used for ALL requests
      */
@@ -38,32 +37,14 @@ public abstract class Request {
     }
 
     /**
-     * Execute POST Request.
-     * 
-     * @return HTTP Status Code
-     * 
-     * @throws RequestException Error during POST Request.
-     */
-    public abstract int post() throws RequestException;
-
-    /**
-     * Execute GET Request.
-     * 
-     * @return HTTP Status Code
-     * 
-     * @throws RequestException Error during GET Request.
-     */
-    public abstract int get() throws RequestException;
-
-    /**
      * Get the HTTP Client for all Requests.
-     * 
+     *
      * @return HTTP Client
      */
     protected static DefaultHttpClient getHttpClient() {
         return Request.HTTP_CLIENT;
     }
-    
+
     protected static String getCookieValue(final String cookieName) {
         LOG.debug("Searching for '{}' cookie", cookieName);
         for(final Cookie cookie : getHttpClient().getCookieStore().getCookies()) {
@@ -76,7 +57,7 @@ public abstract class Request {
         return "";
     }
 
-    
+
     protected ObjectMapper createJsonObjectMapper() {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.getDeserializationConfig().addHandler(new DeserializationProblemHandler() {
@@ -92,7 +73,7 @@ public abstract class Request {
     //    mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
         return mapper;
     }
-    
+
     public static String urlEncode(final String s) {
         try {
             return urlEncode(s, "UTF-8");
@@ -101,10 +82,10 @@ public abstract class Request {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static String urlEncode(final String s, final String enc) throws UnsupportedEncodingException {
         return URLEncoder.encode(s, enc);
     }
-    
+
 }
 

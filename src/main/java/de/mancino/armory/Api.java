@@ -16,6 +16,7 @@ import de.mancino.armory.json.api.character.Character;
 import de.mancino.armory.json.api.guild.Guild;
 import de.mancino.armory.json.api.item.Item;
 import de.mancino.armory.json.api.realm.RealmStatus;
+import de.mancino.armory.requests.ICachableRequest;
 import de.mancino.armory.requests.api.AuctionApiRequest;
 import de.mancino.armory.requests.api.CharacterApiRequest;
 import de.mancino.armory.requests.api.GuildApiRequest;
@@ -24,16 +25,16 @@ import de.mancino.armory.requests.api.RealmStatusApiRequest;
 
 public class Api implements Serializable {
     private static final long serialVersionUID = 2L;
-    
+
     /**
      * Logger instance of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(Armory.class);
-    
+
     private final ArmoryBaseUri armoryBaseUri;
     private final String defaultRealmName;
 
-    private Map<String,AuctionApiRequest> auctionApiRequests = new HashMap<String, AuctionApiRequest>();
+    private Map<String,ICachableRequest<Auctions>> auctionApiRequests = new HashMap<String, ICachableRequest<Auctions>>();
 
     Api(final ArmoryBaseUri armoryBaseUri, final String defaultRealmName) {
         this.armoryBaseUri = armoryBaseUri;
@@ -49,7 +50,7 @@ public class Api implements Serializable {
         if(auctionApiRequests.get(realmName)==null) {
             auctionApiRequests.put(realmName, new AuctionApiRequest(armoryBaseUri, realmName));
         }
-        final AuctionApiRequest request = auctionApiRequests.get(realmName);
+        final ICachableRequest<Auctions> request = auctionApiRequests.get(realmName);
         request.get();
         return request.getObject();
     }
