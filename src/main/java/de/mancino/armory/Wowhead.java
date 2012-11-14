@@ -16,7 +16,7 @@ import de.mancino.armory.xml.wowhead.item.Item;
 
 public class Wowhead implements Serializable {
     private static final long serialVersionUID = 2L;
-    
+    private static final String IMAGE_BASE_URL = "http://wow.zamimg.com/images/wow/icons/large/";
     /**
      * Logger instance of this class.
      */
@@ -34,7 +34,7 @@ public class Wowhead implements Serializable {
 
     public URL getItemURL(final Item item) {
         LOG.info("getItem(item={})", item);
-        final String url = "http://static.wowhead.com/images/wow/icons/large/" + item.icon.toLowerCase() + ".jpg";
+        final String url = IMAGE_BASE_URL + item.icon.toLowerCase() + ".jpg";
         try {
             return new URL(url);
         } catch (MalformedURLException e) {
