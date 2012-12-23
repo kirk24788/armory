@@ -20,6 +20,7 @@ import de.mancino.armory.datatypes.ArmoryRegion;
  * @author mmancino
  */
 public class AuthenticatorArmory extends Armory {
+    private static final long serialVersionUID = 4L;
     /**
      * Logger instance of this class.
      */

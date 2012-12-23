@@ -13,7 +13,6 @@ import de.mancino.armory.json.vault.bid.Bid;
 import de.mancino.armory.json.vault.money.Money;
 import de.mancino.armory.requests.RetryableRequest;
 import de.mancino.armory.requests.vault.AuctionBidVaultRequest;
-import de.mancino.armory.requests.vault.LoginAuthenticatorRequest;
 import de.mancino.armory.requests.vault.LoginVaultRequest;
 import de.mancino.armory.requests.vault.MoneyVaultRequest;
 import de.mancino.armory.requests.vault.SelectCharacterVaultRequest;
