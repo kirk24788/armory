@@ -3,11 +3,8 @@ package de.mancino.armory.requests.vault;
 import org.apache.http.message.BasicNameValuePair;
 
 import de.mancino.armory.datatypes.ArmoryBaseUri;
-import de.mancino.armory.exceptions.RequestException;
-import de.mancino.armory.exceptions.ResponseParsingException;
 import de.mancino.armory.json.vault.AuctionFaction;
 import de.mancino.armory.json.vault.bid.Bid;
-import de.mancino.armory.json.vault.money.Money;
 
 public class AuctionBidVaultRequest extends ArmoryVaultJsonRequest<Bid> {
     public AuctionBidVaultRequest(final ArmoryBaseUri armoryBaseUri, final AuctionFaction faction,  final long auctionId, final long bid) {
@@ -15,19 +12,6 @@ public class AuctionBidVaultRequest extends ArmoryVaultJsonRequest<Bid> {
                 new BasicNameValuePair("auc",  String.valueOf(auctionId)),
                 new BasicNameValuePair("money",  String.valueOf(bid)),
                 new BasicNameValuePair("xstoken", getCookieValue("xstoken"))});
-    }
-
-    @Override
-    protected void parseResponse(byte[] responseAsBytes) throws ResponseParsingException {
-        super.parseResponse(responseAsBytes);
-        System.err.println(new String(responseAsBytes));
-    }
-    
-    @Override
-    public int post() throws RequestException {
-        int r = super.post();
-        System.err.println("RESP: " + r);
-        return r;
     }
     /**
 Falscher Account:

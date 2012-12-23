@@ -1,5 +1,7 @@
 package de.mancino.armory;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +21,9 @@ import de.mancino.armory.datatypes.ArmoryRegion;
  *
  * @author mmancino
  */
-public class Armory {
+public class Armory implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     /**
      * Logger instance of this class.
      */
@@ -28,7 +32,15 @@ public class Armory {
     public final Api api;
 
     public final Vault vault;
+    
+    public final Wowhead wowhead;
 
+    Armory() {
+        this.api=null;
+        this.vault=null;
+        this.wowhead=null;
+    }
+    
     public Armory(final String accountName, 
             final String password,
             final String charName, 
@@ -59,5 +71,6 @@ public class Armory {
     Armory(final Api api, final Vault vault) {
         this.api = api;
         this.vault = vault;
+        wowhead = new Wowhead();
     }
 }

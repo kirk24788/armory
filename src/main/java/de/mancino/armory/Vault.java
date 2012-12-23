@@ -1,5 +1,7 @@
 package de.mancino.armory;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,20 +12,21 @@ import de.mancino.armory.json.vault.AuctionFaction;
 import de.mancino.armory.json.vault.bid.Bid;
 import de.mancino.armory.json.vault.money.Money;
 import de.mancino.armory.requests.RetryableRequest;
-import de.mancino.armory.requests.api.GuildApiRequest;
 import de.mancino.armory.requests.vault.AuctionBidVaultRequest;
 import de.mancino.armory.requests.vault.LoginAuthenticatorRequest;
 import de.mancino.armory.requests.vault.LoginVaultRequest;
 import de.mancino.armory.requests.vault.MoneyVaultRequest;
 import de.mancino.armory.requests.vault.SelectCharacterVaultRequest;
 
-public class Vault {
+public class Vault implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     protected final ArmoryBaseUri armoryBaseUri; 
     protected final String accountName; 
     protected final String password; 
     protected String charName; 
     protected String realmName; 
-
+    
     public Vault(final ArmoryBaseUri armoryBaseUri, final String accountName, final String password, 
             final String charName, final String realmName) {
         this.armoryBaseUri = armoryBaseUri;
@@ -85,15 +88,15 @@ public class Vault {
     }
 
 
-    public Bid bid(AuctionFaction faction, Auction auction, long bid) throws RequestException {
+    public Bid bid(final AuctionFaction faction, final Auction auction, final long bid) throws RequestException {
         return bid(faction, auction.auc, bid);
     }
     
-    public Bid buyout(AuctionFaction faction, Auction auction) throws RequestException {
+    public Bid buyout(final AuctionFaction faction, final Auction auction) throws RequestException {
         return bid(faction ,auction.auc, auction.buyout);
     }
 
-    public Bid bid(AuctionFaction faction, long auctionId, long bid) throws RequestException {
+    public Bid bid(final AuctionFaction faction, final long auctionId, final long bid) throws RequestException {
         verifyActiveChar();
         final RetryableRequest<AuctionBidVaultRequest> request = 
                 new RetryableRequest<AuctionBidVaultRequest>(new AuctionBidVaultRequest(armoryBaseUri, faction, auctionId, bid)) {

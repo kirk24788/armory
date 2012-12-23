@@ -1,5 +1,7 @@
 package de.mancino.armory.json.api.auction;
 
+import java.io.Serializable;
+
 import de.mancino.armory.json.JsonResponse;
 
 /**
@@ -47,7 +49,9 @@ import de.mancino.armory.json.JsonResponse;
 }
  * @author mmancino
  */
-public class Auctions extends JsonResponse {
+public class Auctions extends JsonResponse implements Serializable {
+    private static final long serialVersionUID = 2L;
+    
     public Realm realm;
     public AuctionHouse alliance;
     public AuctionHouse horde;
