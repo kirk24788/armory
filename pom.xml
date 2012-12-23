@@ -26,6 +26,12 @@
         </developer>
     </developers>
     <dependencies>
+        <!--  Bouncycastle Crypt Libraries -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>1.46</version>
+        </dependency>
         <!-- Rest Easy -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>

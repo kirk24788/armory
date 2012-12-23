@@ -12,16 +12,17 @@ import de.mancino.armory.json.vault.money.Money;
 import de.mancino.armory.requests.RetryableRequest;
 import de.mancino.armory.requests.api.GuildApiRequest;
 import de.mancino.armory.requests.vault.AuctionBidVaultRequest;
+import de.mancino.armory.requests.vault.LoginAuthenticatorRequest;
 import de.mancino.armory.requests.vault.LoginVaultRequest;
 import de.mancino.armory.requests.vault.MoneyVaultRequest;
 import de.mancino.armory.requests.vault.SelectCharacterVaultRequest;
 
 public class Vault {
-    private final ArmoryBaseUri armoryBaseUri; 
-    private final String accountName; 
-    private final String password; 
-    private final String charName; 
-    private final String realmName; 
+    protected final ArmoryBaseUri armoryBaseUri; 
+    protected final String accountName; 
+    protected final String password; 
+    protected String charName; 
+    protected String realmName; 
 
     public Vault(final ArmoryBaseUri armoryBaseUri, final String accountName, final String password, 
             final String charName, final String realmName) {
@@ -37,14 +38,20 @@ public class Vault {
      */
     private static final Logger LOG = LoggerFactory.getLogger(Vault.class);
 
-    private void login() throws RequestException {
+    protected void login() throws RequestException {
         LOG.info("login(accountName={} password={}***{})", new Object[] {accountName, password.charAt(0), 
                 password.charAt(password.length()-1)});
         final LoginVaultRequest request = new LoginVaultRequest(armoryBaseUri, accountName, password);
         request.post();
     }
+    
+    public void changeActiveChar(final String charName, final String realmName) throws RequestException {
+        this.charName = charName;
+        this.realmName = realmName;
+        selectActiveChar();
+    }
 
-    private void selectActiveChar() throws RequestException {
+    protected void selectActiveChar() throws RequestException {
         LOG.info("selectActiveChar(realmName={}, charName={})", realmName, charName);
         final RetryableRequest<SelectCharacterVaultRequest> request = 
                 new RetryableRequest<SelectCharacterVaultRequest>(
@@ -57,7 +64,7 @@ public class Vault {
         request.post();
     }
     
-    private void verifyActiveChar() throws RequestException {
+    protected void verifyActiveChar() throws RequestException {
         final Money money = getMoney();
         if(!money.character.name.equals(charName) || money.character.realmName.equals(realmName)) {
             selectActiveChar();

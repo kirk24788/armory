@@ -26,17 +26,16 @@ public class Armory {
     private static final Logger LOG = LoggerFactory.getLogger(Armory.class);
 
     public final Api api;
-    
+
     public final Vault vault;
 
-    
     public Armory(final String accountName, 
             final String password,
             final String charName, 
             final String realmName) {
         this(new ArmoryBaseUri(), accountName, password, charName, realmName);
     }
-    
+
     public Armory(final ArmoryRegion region,
             final ArmoryLanguage language,
             final String accountName, 
@@ -51,10 +50,14 @@ public class Armory {
             final String password,
             final String charName, 
             final String realmName) {
-        LOG.info("Initializing Armory...(baseUri={} accountName={} password={}***{} charName={} realmName={})",
+        this(new Api(armoryBaseUri, realmName), new Vault(armoryBaseUri, accountName, password, charName, realmName));
+        LOG.info("Initialized Armory...(baseUri={} accountName={} password={}***{} charName={} realmName={})",
                 new Object[] {armoryBaseUri.getBaseUri(), accountName, password.charAt(0), 
                 password.charAt(password.length()-1), charName, realmName});
-        api = new Api(armoryBaseUri, realmName);
-        vault = new Vault(armoryBaseUri, accountName, password, charName, realmName);
+    }
+
+    Armory(final Api api, final Vault vault) {
+        this.api = api;
+        this.vault = vault;
     }
 }

@@ -35,11 +35,12 @@ public class ArmoryVaultJsonRequest<T extends JsonResponse> extends ArmoryVaultR
     @Override
     protected void parseResponse(byte[] responseAsBytes) throws ResponseParsingException {
         final ObjectMapper mapper = createJsonObjectMapper();
+        final String responseAsString = new String(responseAsBytes);
         try {
-            final String responseAsString = new String(responseAsBytes);
             LOG.trace("Parsing JSON Response:\n{}", responseAsString);
             jsonObject = mapper.readValue(new String(responseAsBytes), valueType);
         } catch (JsonParseException e) {
+            LOG.warn("Error while Parsing JSON Response:\n{}", responseAsString);
             throw new ResponseParsingException("Parsing exception while processing Response!", e);
         } catch (JsonMappingException e) {
             // TODO Auto-generated catch block

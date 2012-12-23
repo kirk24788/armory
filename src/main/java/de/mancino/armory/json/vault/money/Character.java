@@ -30,4 +30,8 @@ public class Character {
     public int achievementPoints;
     public String side; // XXX: ENUM
     public String genderEnum; // XXX: ENUM
+    public int activeSpecializationKey;
+    public ActiveSpecialization activeSpecialization;
+    public int raceKey;
+    public String battleGroupName;
 }
