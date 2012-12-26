@@ -73,7 +73,7 @@ public abstract class GenericRequest extends Request {
             LOG.error(msg);
             throw new RequestIoException(msg, e);
         }            
-        LOG.debug("Request for URI: {} returned: {}", request.getURI(), response.getStatusLine());
+        LOG.info("Request for URI: {} returned: {}", request.getURI(), response.getStatusLine());
         if(LOG.isTraceEnabled()) {
             LOG.trace(new String(responseAsBytes));
         }

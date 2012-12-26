@@ -8,6 +8,9 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.DeserializationProblemHandler;
@@ -29,9 +32,15 @@ public abstract class Request implements IRequest {
      */
     private static final DefaultHttpClient HTTP_CLIENT = createHttpClient();
 
+    public static final int DEFAULT_CONNECTION_TIMEOUT = 1500;
+    public static final int DEFAULT_SOCKET_TIMEOUT = 1500;
+
     private static DefaultHttpClient createHttpClient() {
         ClientConnectionManager cm = new ThreadSafeClientConnManager();
-        final DefaultHttpClient defaultHttpClient = new DefaultHttpClient(cm);
+        final HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParams, DEFAULT_CONNECTION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpParams, DEFAULT_SOCKET_TIMEOUT);
+        final DefaultHttpClient defaultHttpClient = new DefaultHttpClient(cm, httpParams);
         defaultHttpClient.setRedirectStrategy(new PostRedirectStrategy());
         return defaultHttpClient;
     }
