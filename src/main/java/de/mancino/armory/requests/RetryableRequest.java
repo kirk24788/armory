@@ -14,7 +14,7 @@ public class RetryableRequest<T extends Request> extends Request {
     /**
      * Default number of retries if none is set.
      */
-    public final static int DEFAULT_MAX_REQUEST_RETRIES = 3;
+    public final static int DEFAULT_MAX_REQUEST_RETRIES = 2;
 
     /**
      * Number of retries for this instance

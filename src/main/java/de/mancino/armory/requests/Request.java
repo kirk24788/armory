@@ -31,9 +31,11 @@ public abstract class Request implements IRequest {
      * HTTP Client used for ALL requests
      */
     private static final DefaultHttpClient HTTP_CLIENT = createHttpClient();
+    
+    public static final String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.17 (KHTML, like Gecko) Version/6.0.2 Safari/536.26.17";
 
-    public static final int DEFAULT_CONNECTION_TIMEOUT = 1500;
-    public static final int DEFAULT_SOCKET_TIMEOUT = 1500;
+    public static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
+    public static final int DEFAULT_SOCKET_TIMEOUT = 5000;
 
     private static DefaultHttpClient createHttpClient() {
         ClientConnectionManager cm = new ThreadSafeClientConnManager();

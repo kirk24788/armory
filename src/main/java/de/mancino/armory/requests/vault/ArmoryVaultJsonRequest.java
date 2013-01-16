@@ -43,10 +43,10 @@ public class ArmoryVaultJsonRequest<T extends JsonResponse> extends ArmoryVaultR
                 throw new ResponseParsingException("Error " + jsonObject.error.code + ": " + jsonObject.error.message);
             }
         } catch (JsonParseException e) {
-            LOG.warn("Error while Parsing JSON Response:\n{}", responseAsString);
+            LOG.debug("Error while Parsing JSON Response:\n{}", responseAsString);
             throw new ResponseParsingException("Parsing exception while processing Response!", e);
         } catch (JsonMappingException e) {
-            throw new ResponseParsingException("Parsing exception while mapping Response!", e);
+            throw new ResponseParsingException("Mapping exception while mapping Response!", e);
         } catch (IOException e) {
             throw new ResponseParsingException("IO Exception while processing Response!", e);
         }

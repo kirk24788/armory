@@ -51,6 +51,7 @@ public class PostRequest extends GenericRequest {
                 throw new RuntimeException(e);
             }
         }
+        httpPost.setHeader("User-Agent", USER_AGENT);
         return httpPost;
     }
 

@@ -33,6 +33,7 @@ public class GetRequest extends GenericRequest {
     protected HttpGet prepareGetMethod() throws RequestException {
         LOG.debug("Preparing GET Request for URI: " + requestPath);
         final HttpGet httpGet = new HttpGet(requestPath);
+        httpGet.setHeader("User-Agent", USER_AGENT);
         return httpGet;
     }
 }

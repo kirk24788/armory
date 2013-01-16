@@ -20,6 +20,8 @@ public class TooltipParams {
     public int gem0;
     public int gem1;
     public int reforge;
+    public int transmogItem;
     public boolean extraSocket;
     public List<Integer> set;
+    public Upgrade upgrade;
 }

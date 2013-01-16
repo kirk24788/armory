@@ -8,12 +8,13 @@ import de.mancino.armory.json.JsonResponse;
 import de.mancino.armory.json.api.character.appearance.Appearance;
 import de.mancino.armory.json.api.character.guild.Guild;
 import de.mancino.armory.json.api.character.items.Items;
-import de.mancino.armory.json.api.character.pet.Pet;
+import de.mancino.armory.json.api.character.mounts.Mounts;
+import de.mancino.armory.json.api.character.pets.Pets;
 import de.mancino.armory.json.api.character.professions.Professions;
 import de.mancino.armory.json.api.character.progression.Progression;
 import de.mancino.armory.json.api.character.reputation.Reputation;
 import de.mancino.armory.json.api.character.stats.Stats;
-import de.mancino.armory.json.api.character.talent.Talent;
+import de.mancino.armory.json.api.character.talent.Talents;
 import de.mancino.armory.json.api.character.title.Title;
 import de.mancino.armory.json.api.generic.achievments.Achievements;
 
@@ -27,6 +28,8 @@ import de.mancino.armory.json.api.generic.achievments.Achievements;
 public class Character extends JsonResponse {
     public String realm;
     public String name;
+    public String battlegroup;
+    public String calcClass;
     public int level;
     public long lastModified;
     public String thumbnail;
@@ -50,7 +53,7 @@ public class Character extends JsonResponse {
     /**
      * A list of talent structures.
      */
-    public List<Talent> talents;
+    public List<Talents> talents;
 
 
     /**
@@ -91,13 +94,13 @@ public class Character extends JsonResponse {
     /**
      * A list of all of the mounts obtained by the character.
      */
-    public List<Integer> mounts;
+    public Mounts mounts;
     
 
     /**
      * A list of all of the combat pets obtained by the character.
      */
-    public List<Pet> pets;
+    public Pets pets;
     
 
     /**

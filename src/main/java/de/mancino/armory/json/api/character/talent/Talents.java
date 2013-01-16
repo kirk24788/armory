@@ -2,8 +2,30 @@ package de.mancino.armory.json.api.character.talent;
 
 import java.util.List;
 
+
 /**
-"glyphs":{
+{
+  "talents":[
+    {
+      "selected":true,
+      "name":"Protection",
+      "icon":"ability_paladin_shieldofthetemplar",
+      "build":"000000000000000000003222300312110112123103203200000000000000",
+      "trees":[
+        {
+          "points":"00000000000000000000",
+          "total":0
+        },
+        {
+          "points":"32223003121101121231",
+          "total":31
+        },
+        {
+          "points":"03203200000000000000",
+          "total":10
+        }
+      ],
+      "glyphs":{
         "prime":[
           {
             "glyph":195,
@@ -65,9 +87,20 @@ import java.util.List;
           }
         ]
       }
+    },
+    {...}
+  ]
+}
+
  * @author mmancino
+ *
  */
-public class Glyphs {
-    public List<Glyph> major;
-    public List<Glyph> minor;
+public class Talents {
+    public boolean selected;
+    public List<Talent> talents;
+    public Glyphs glyphs;
+    public Spec spec;
+    public String calcTalent;
+    public String calcSpec;
+    public String calcGlyph;
 }

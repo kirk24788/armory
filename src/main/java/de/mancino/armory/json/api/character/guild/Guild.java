@@ -24,6 +24,7 @@ package de.mancino.armory.json.api.character.guild;
 public class Guild {
     public String name;
     public String realm;
+    public String battlegroup;
     public int level;
     public int members;
     public int achievementPoints;

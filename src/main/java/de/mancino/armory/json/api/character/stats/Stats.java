@@ -93,7 +93,18 @@ public class Stats {
     public int parryRating;
     public float block;
     public int blockRating;
-    public int resil;
+
+    public float pvpResilienceBonus;
+    public float pvpResilience;
+    public int pvpResilienceRating;
+    
+    public float rangedExpertise;
+
+    public float pvpPower;
+    public int pvpPowerRating;
+    public float pvpPowerDamage;
+    public float pvpPowerHealing;
+    
     public float mainHandDmgMin;
     public float mainHandDmgMax;
     public float mainHandSpeed;
