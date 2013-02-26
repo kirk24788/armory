@@ -2,10 +2,10 @@ package de.mancino.armory.requests;
 
 import java.io.IOException;
 
-import org.apache.http.Header;
-import org.apache.http.StatusLine;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -24,9 +24,9 @@ public abstract class GenericRequest extends Request {
 
     /**
      * Execute POST Request.
-     * 
+     *
      * @return HTTP Status Code
-     * 
+     *
      * @throws RequestException Error during Request
      */
     @Override
@@ -39,9 +39,9 @@ public abstract class GenericRequest extends Request {
 
     /**
      * Execute GET Request.
-     * 
+     *
      * @return HTTP Status Code
-     * 
+     *
      * @throws RequestException Error during Request
      */
     @Override
@@ -53,7 +53,7 @@ public abstract class GenericRequest extends Request {
 
     protected abstract HttpGet prepareGetMethod() throws RequestException;
 
-    protected int executeRequest(final HttpUriRequest request) throws RequestException {
+    protected synchronized int executeRequest(final HttpUriRequest request) throws RequestException {
         LOG.info("Executing Request for URI: '{}'", request.getURI());
         for(final Header additionalHeader : getAdditionalHeaders()) {
             request.setHeader(additionalHeader);
@@ -68,11 +68,11 @@ public abstract class GenericRequest extends Request {
         try {
             responseAsBytes = IOUtils.toByteArray(response.getEntity().getContent());
         } catch (IOException e) {
-            final String msg = "Couldn't consume Response for URI: " + request.getURI() + 
+            final String msg = "Couldn't consume Response for URI: " + request.getURI() +
                     " - HTTP Status Line: " + response.getStatusLine();
             LOG.error(msg);
             throw new RequestIoException(msg, e);
-        }            
+        }
         LOG.info("Request for URI: {} returned: {}", request.getURI(), response.getStatusLine());
         if(LOG.isTraceEnabled()) {
             LOG.trace(new String(responseAsBytes));
@@ -85,7 +85,7 @@ public abstract class GenericRequest extends Request {
     /**
      * Additional HTTP Headers to add to the requests.
      * Create new Headers with new BasicHeader(name, value).
-     * 
+     *
      * @return List of additional Http Headers
      */
     protected Header[] getAdditionalHeaders() {
@@ -94,7 +94,7 @@ public abstract class GenericRequest extends Request {
 
     protected void parseResponse(final byte[] responseAsBytes) throws ResponseParsingException {
     }
-    
+
     protected void handleResponseStatus(final HttpUriRequest request, final StatusLine statusLine) throws RequestException  {
         if (statusLine.getStatusCode() < 200) {
             throw new IllegalStateException("Received illegal Status from HTTP Client! " + statusLine);
