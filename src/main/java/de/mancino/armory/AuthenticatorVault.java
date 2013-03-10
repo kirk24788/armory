@@ -15,7 +15,7 @@ public class AuthenticatorVault extends Vault {
     private final String restorationCode;
     private Authenticator authenticator;
 
-    public AuthenticatorVault(final ArmoryBaseUri armoryBaseUri, final String accountName, final String password, 
+    public AuthenticatorVault(final ArmoryBaseUri armoryBaseUri, final String accountName, final String password,
             final String charName, final String realmName,
             final String authenticatorSerial,
             final String restorationCode) {
@@ -29,14 +29,15 @@ public class AuthenticatorVault extends Vault {
      */
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticatorVault.class);
 
+    @Override
     protected void login() throws RequestException {
-        LOG.info("login(accountName={} password={}***{})", new Object[] {accountName, password.charAt(0), 
+        LOG.info("login(accountName={} password={}***{})", new Object[] {accountName, password.charAt(0),
                 password.charAt(password.length()-1)});
         final LoginVaultRequest requestLogin = new LoginVaultRequest(armoryBaseUri, accountName, password);
         requestLogin.post();
         authenticator();
     }
-    
+
     protected void authenticator() throws RequestException {
         final String token = getAuthenticatorToken();
         LOG.info("authenticator(authenticatorToken={})", new Object[] {token});
@@ -57,8 +58,8 @@ public class AuthenticatorVault extends Vault {
             throw new RequestException("Couldn't init Authenticator", e);
         }
     }
-    
-    private String getAuthenticatorToken() throws RequestException {
+
+    public String getAuthenticatorToken() throws RequestException {
         if(authenticator == null) {
             initAuthenticator();
         }
