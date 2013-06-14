@@ -28,11 +28,12 @@ public class Vault implements Serializable {
     protected AuctionFaction faction;
 
     public Vault(final ArmoryBaseUri armoryBaseUri, final String accountName, final String password,
-            final String charName, final String realmName) {
+            final String charName, final AuctionFaction faction, final String realmName) {
         this.armoryBaseUri = armoryBaseUri;
         this.accountName = accountName;
         this.password = password;
         this.charName = charName;
+        this.faction = faction;
         this.realmName = realmName;
     }
 

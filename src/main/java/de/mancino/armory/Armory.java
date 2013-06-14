@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.datatypes.ArmoryLanguage;
 import de.mancino.armory.datatypes.ArmoryRegion;
+import de.mancino.armory.json.vault.AuctionFaction;
 
 /**
  * Class for controlling Blizzard's WoW-Armory Interface.
@@ -23,7 +24,7 @@ import de.mancino.armory.datatypes.ArmoryRegion;
  */
 public class Armory implements Serializable {
     private static final long serialVersionUID = 2L;
-    
+
     /**
      * Logger instance of this class.
      */
@@ -32,7 +33,7 @@ public class Armory implements Serializable {
     public final Api api;
 
     public final Vault vault;
-    
+
     public final Wowhead wowhead;
 
     Armory() {
@@ -40,31 +41,34 @@ public class Armory implements Serializable {
         this.vault=null;
         this.wowhead=null;
     }
-    
-    public Armory(final String accountName, 
+
+    public Armory(final String accountName,
             final String password,
-            final String charName, 
+            final String charName,
+            final AuctionFaction faction,
             final String realmName) {
-        this(new ArmoryBaseUri(), accountName, password, charName, realmName);
+        this(new ArmoryBaseUri(), accountName, password, charName, faction, realmName);
     }
 
     public Armory(final ArmoryRegion region,
             final ArmoryLanguage language,
-            final String accountName, 
+            final String accountName,
             final String password,
-            final String charName, 
+            final String charName,
+            final AuctionFaction faction,
             final String realmName) {
-        this(new ArmoryBaseUri(region, language), accountName, password, charName, realmName);
+        this(new ArmoryBaseUri(region, language), accountName, password, charName, faction, realmName);
     }
 
     public Armory(final ArmoryBaseUri armoryBaseUri,
-            final String accountName, 
+            final String accountName,
             final String password,
-            final String charName, 
+            final String charName,
+            final AuctionFaction faction,
             final String realmName) {
-        this(new Api(armoryBaseUri, realmName), new Vault(armoryBaseUri, accountName, password, charName, realmName));
+        this(new Api(armoryBaseUri, realmName), new Vault(armoryBaseUri, accountName, password, charName, faction, realmName));
         LOG.info("Initialized Armory...(baseUri={} accountName={} password={}***{} charName={} realmName={})",
-                new Object[] {armoryBaseUri.getBaseUri(), accountName, password.charAt(0), 
+                new Object[] {armoryBaseUri.getBaseUri(), accountName, password.charAt(0),
                 password.charAt(password.length()-1), charName, realmName});
     }
 

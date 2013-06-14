@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.datatypes.ArmoryLanguage;
 import de.mancino.armory.datatypes.ArmoryRegion;
+import de.mancino.armory.json.vault.AuctionFaction;
 
 /**
  * Class for controlling Blizzard's WoW-Armory Interface.
@@ -25,39 +26,42 @@ public class AuthenticatorArmory extends Armory {
      * Logger instance of this class.
      */
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticatorArmory.class);
-    
-    public AuthenticatorArmory(final String accountName, 
+
+    public AuthenticatorArmory(final String accountName,
             final String password,
-            final String charName, 
+            final String charName,
+            final AuctionFaction faction,
             final String realmName,
             final String authenticatorSerial,
             final String restorationCode) {
-        this(new ArmoryBaseUri(), accountName, password, charName, realmName, authenticatorSerial, restorationCode);
+        this(new ArmoryBaseUri(), accountName, password, charName, faction, realmName, authenticatorSerial, restorationCode);
     }
-    
+
     public AuthenticatorArmory(final ArmoryRegion region,
             final ArmoryLanguage language,
-            final String accountName, 
+            final String accountName,
             final String password,
-            final String charName, 
+            final String charName,
+            final AuctionFaction faction,
             final String realmName,
             final String authenticatorSerial,
             final String restorationCode) {
-        this(new ArmoryBaseUri(region, language), accountName, password, charName, realmName, authenticatorSerial, restorationCode);
+        this(new ArmoryBaseUri(region, language), accountName, password, charName, faction, realmName, authenticatorSerial, restorationCode);
     }
 
     public AuthenticatorArmory(final ArmoryBaseUri armoryBaseUri,
-            final String accountName, 
+            final String accountName,
             final String password,
-            final String charName, 
+            final String charName,
+            final AuctionFaction faction,
             final String realmName,
             final String authenticatorSerial,
             final String restorationCode) {
-        super(new Api(armoryBaseUri, realmName), 
-                new AuthenticatorVault(armoryBaseUri, accountName, password, charName, realmName, authenticatorSerial, restorationCode));
-        LOG.info("Initialized Armory...(baseUri={} accountName={} password={}***{} charName={} realmName={} authenticatorSerial={} restorationCode={}***{})",
-                new Object[] {armoryBaseUri.getBaseUri(), accountName, password.charAt(0), 
-                password.charAt(password.length()-1), charName, realmName, authenticatorSerial,
+        super(new Api(armoryBaseUri, realmName),
+                new AuthenticatorVault(armoryBaseUri, accountName, password, charName, faction, realmName, authenticatorSerial, restorationCode));
+        LOG.info("Initialized Armory...(baseUri={} accountName={} password={}***{} charName={} faction={} realmName={} authenticatorSerial={} restorationCode={}***{})",
+                new Object[] {armoryBaseUri.getBaseUri(), accountName, password.charAt(0),
+                password.charAt(password.length()-1), charName, faction.key, realmName, authenticatorSerial,
                 restorationCode.charAt(0),  restorationCode.charAt(restorationCode.length()-1)});
     }
 }

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import de.mancino.armory.authenticator.Authenticator;
 import de.mancino.armory.datatypes.ArmoryBaseUri;
 import de.mancino.armory.exceptions.RequestException;
+import de.mancino.armory.json.vault.AuctionFaction;
 import de.mancino.armory.requests.vault.LoginAuthenticatorRequest;
 import de.mancino.armory.requests.vault.LoginVaultRequest;
 
@@ -16,10 +17,10 @@ public class AuthenticatorVault extends Vault {
     private Authenticator authenticator;
 
     public AuthenticatorVault(final ArmoryBaseUri armoryBaseUri, final String accountName, final String password,
-            final String charName, final String realmName,
+            final String charName, final AuctionFaction faction, final String realmName,
             final String authenticatorSerial,
             final String restorationCode) {
-        super(armoryBaseUri, accountName, password, charName, realmName);
+        super(armoryBaseUri, accountName, password, charName, faction, realmName);
         this.authenticatorSerial = authenticatorSerial;
         this.restorationCode = restorationCode;
     }
