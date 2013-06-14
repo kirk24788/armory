@@ -6,18 +6,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.engines.RSAEngine;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
-import org.bouncycastle.util.BigIntegers;
 
 public class Authenticator {
     /*--- Constants ---*/
@@ -60,7 +57,7 @@ public class Authenticator {
         str_consts.get("US").put("auth-url-time",     "http://m.us.mobileservice.blizzard.com/enrollment/time.htm");
         str_consts.get("US").put("auth-url-init-restore",     "http://m.us.mobileservice.blizzard.com/enrollment/initiatePaperRestore.htm");
         //http://mobile-service.blizzard.com
-        str_consts.get("US").put("auth-url-validate-restore",     "http://m.us.mobileservice.blizzard.com/enrollment/validatePaperRestore.htm");
+        str_consts.get("US").put("auth-url-validate-restore",     "http://mobile-service.blizzard.com/enrollment/validatePaperRestore.htm");
         str_consts.get("US").put("auth-url-setup",    "http://www.battle.net/bma");
         str_consts.get("US").put("auth-url-acctmgmt", "http://www.battle.net/account/management");
         str_consts.get("US").put("auth-region",       "US");
@@ -213,7 +210,7 @@ public class Authenticator {
         for (int i = 0; i < 10; i++) {
             restoreCodeBytes[i] = convertRestoreCodeCharToByte(arrayOfChar[i]);
         }
-        
+
        // build the response to the challenge
         HMac hmac = new HMac(new SHA1Digest());
         hmac.init(new KeyParameter(restoreCodeBytes));
@@ -223,15 +220,15 @@ public class Authenticator {
         hmac.update(hashdata, 0, hashdata.length);
         byte hash[] = new byte[hmac.getMacSize()];
         hmac.doFinal(hash, 0);
-        
+
         // create a random key
         byte[] oneTimePad = BlizzCrypt.genRandomBytes(20); //??? Should work the same...
-        
+
         // concatanate the hash and key
         byte[] hashkey = new byte[hash.length + oneTimePad.length];
         System.arraycopy(hash, 0, hashkey, 0, hash.length);
         System.arraycopy(oneTimePad, 0, hashkey, hash.length, oneTimePad.length);
-        
+
 
         // encrypt the data with BMA public key
         final String ENROLL_MODULUS =
@@ -245,7 +242,7 @@ public class Authenticator {
         RSAKeyParameters keyParameters = new RSAKeyParameters(false, new BigInteger(ENROLL_MODULUS, 16), new BigInteger(ENROLL_EXPONENT, 16));
         rsa.init(true, keyParameters);
         byte[] encrypted = rsa.processBlock(hashkey, 0, hashkey.length);
-        
+
         // prepend the serial to the encrypted data
         byte[] postbytes = new byte[serialBytes.length + encrypted.length];
         System.arraycopy(serialBytes, 0, postbytes, 0, serialBytes.length);
@@ -280,22 +277,22 @@ public class Authenticator {
                                 {
                                         throw new InvalidRestoreResponseException(string.Format("Error communicating with server: {0} - {1}", code, ((HttpWebResponse)we.Response).StatusDescription));
                                 }
-         * 
+         *
          */
         inp_stream = conn.getInputStream();
         inp_stream.read(secretKey, 0, 32);
         inp_stream.close();
         conn.disconnect();
-        
+
         // xor the returned data key with our pad to get the actual secret key
         for (int i = oneTimePad.length - 1; i >= 0; i--)
         {
                 secretKey[i] ^= oneTimePad[i];
         }
-        
+
         token = secretKey;
         /*
-      
+
                         // xor the returned data key with our pad to get the actual secret key
                         for (int i = oneTimePad.Length - 1; i >= 0; i--)
                         {
@@ -500,7 +497,7 @@ public class Authenticator {
                         Sync();
                 }
      */
-    
+
     /// <summary>
     /// Convert a char to a byte but with appropriate mapping to exclude I,L,O and S. E.g. A=10 but J=18 not 19 (as I is missing)
     /// </summary>
@@ -535,7 +532,7 @@ public class Authenticator {
             }
     }
 
-    
+
     /**
      * Converts str_token (40 hex chars) to token (20 bytes)
      */
@@ -693,6 +690,7 @@ public class Authenticator {
         time_diff = bytesToLong(b_servertime, 0) - System.currentTimeMillis();
     }
 
+    @Override
     public String toString() {
         return str_serial;
     }
